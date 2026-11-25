@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZON — منصة إدارة الفرق والطلبات</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-obsidian: #07070d;
+      --bg-card: #10101c;
+      --bg-card-2: #171728;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --text-main: #f4f4ff;
+      --text-muted: #9898b8;
+      --violet: #7c3aed;
+      --cyan: #06b6d4;
+      --lime: #a3e635;
+      --magenta: #ec4899;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 12% 10%, rgba(124, 58, 237, 0.22), transparent 35%),
+        radial-gradient(circle at 88% 15%, rgba(6, 182, 212, 0.18), transparent 35%),
+        radial-gradient(circle at 50% 95%, rgba(236, 72, 153, 0.14), transparent 40%),
+        var(--bg-obsidian);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .hidden { display: none !important; }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn:hover { opacity: 0.94; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(6, 182, 212, 0.28);
+    }
+
+    .btn-lime {
+      background: var(--lime);
+      color: #090c04;
+    }
+
+    .btn-magenta {
+      background: var(--magenta);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-ghost {
+      background: var(--bg-card-2);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg-card-2);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .brand-logo {
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      background: linear-gradient(90deg, var(--cyan), var(--lime), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-owner { background: rgba(163, 230, 53, 0.18); color: var(--lime); border: 1px solid rgba(163, 230, 53, 0.4); }
+    .badge-mod { background: rgba(6, 182, 212, 0.18); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.4); }
+    .badge-tech { background: rgba(124, 58, 237, 0.2); color: #c4b5fd; border: 1px solid rgba(124, 58, 237, 0.4); }
+    .badge-pending { background: rgba(245, 158, 11, 0.18); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-banned { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+    /* Auth Gate */
+    .auth-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .auth-box {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 9px 15px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(6, 182, 212, 0.28));
+      color: #fff;
+      border-color: var(--cyan);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .item-row {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .chat-box {
+      height: 340px;
+      overflow-y: auto;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .msg-bubble {
+      max-width: 82%;
+      padding: 9px 13px;
+      border-radius: 12px;
+      font-size: 14px;
+      background: rgba(124, 58, 237, 0.22);
+      border: 1px solid rgba(124, 58, 237, 0.35);
+      align-self: flex-start;
+    }
+
+    .msg-bubble.mine {
+      background: rgba(6, 182, 212, 0.22);
+      border-color: rgba(6, 182, 212, 0.4);
+      align-self: flex-end;
+    }
+
+    .msg-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .perm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .perm-check {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--bg-card);
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+
+    .perm-check input { width: auto; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-left: 6px;
+    }
+
+    .dot-cloud { background: var(--lime); box-shadow: 0 0 8px var(--lime); }
+    .dot-local { background: var(--warning); }
+  </style>
+</head>
+<body>
+
+  <!-- بوابة الدخول -->
+  <div id="authScreen" class="auth-wrap">
+    <div class="card auth-box">
+      <div style="text-align:center; margin-bottom:18px;">
+        <h1 class="brand-logo" style="font-size:34px;">ZON</h1>
+        <p style="color:var(--text-muted); font-size:13px;">نظام إدارة الطلبات والفرق والمذكرات</p>
+        <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">
+          <span id="connDot" class="status-dot dot-local"></span>
+          <span id="connText">وضع التخزين المحلي (جاهز للربط السحابي)</span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <button id="modeLoginBtn" class="btn btn-primary" style="flex:1;" onclick="switchAuthMode('login')">تسجيل الدخول</button>
+        <button id="modeRegisterBtn" class="btn btn-ghost" style="flex:1;" onclick="switchAuthMode('register')">حساب جديد</button>
+      </div>
+
+      <div id="nameFieldWrap" class="hidden" style="margin-bottom:10px;">
+        <label>الاسم الكامل</label>
+        <input id="authName" type="text" placeholder="مثال: علي حسن" />
+      </div>
+
+      <div id="roleFieldWrap" class="hidden" style="margin-bottom:10px;">
+        <label>الصفة المطلوبة (تُعتمد بعد موافقة الإدارة)</label>
+        <select id="authRequestedRole">
+          <option value="tech">فني ميداني</option>
+          <option value="mod">مشرف</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <label>البريد الإلكتروني</label>
+        <input id="authEmail" type="email" placeholder="example@mail.com" />
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label>كلمة المرور</label>
+        <input id="authPassword" type="password" placeholder="••••••••" />
+      </div>
+
+      <button id="authSubmitBtn" class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="submitAuth()">دخول إلى ZON</button>
+
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" style="flex:1; font-size:12.5px;" onclick="openDbModal()">إعداد قاعدة البيانات</button>
+        <button class="btn btn-lime" style="flex:1; font-size:12.5px;" onclick="quickOwnerDemo()">دخول تجريبي كمالك</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة الانتظار أو الحظر -->
+  <div id="gateScreen" class="auth-wrap hidden">
+    <div class="card auth-box" style="text-align:center;">
+      <h2 class="brand-logo" style="font-size:26px; margin-bottom:8px;">ZON</h2>
+      <div id="gateBadge" style="margin-bottom:12px;"></div>
+      <h3 id="gateTitle" style="margin-bottom:8px;">حسابك قيد المراجعة</h3>
+      <p id="gateDesc" style="color:var(--text-muted); font-size:14px; margin-bottom:18px;">
+        تم تسجيل بريدك الإلكتروني بنجاح. لن يتم عرض أي بيانات أو محادثات حتى يوافق مالك النظام على حسابك ويحدد صلاحياتك.
+      </p>
+      <button class="btn btn-ghost" onclick="logout()">تسجيل الخروج</button>
+    </div>
+  </div>
+
+  <!-- التطبيق الرئيسي -->
+  <div id="appScreen" class="container hidden">
+    <div class="topbar">
+      <div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span class="brand-logo" style="font-size:24px;">ZON</span>
+          <span id="currentUserBadge"></span>
+          <span style="font-size:12px; color:var(--text-muted);">
+            <span id="appConnDot" class="status-dot dot-local"></span>
+            <span id="appConnLabel">محلي</span>
+          </span>
+        </div>
+        <div id="currentUserSub" style="font-size:12px; color:var(--text-muted); margin-top:2px;"></div>
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="dbConfigBtn" class="btn btn-ghost" onclick="openDbModal()">قاعدة البيانات</button>
+        <button class="btn btn-danger" onclick="logout()">خروج</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="orders" onclick="switchTab('orders')">الطلبات</button>
+      <button class="tab-btn" data-tab="chat" onclick="switchTab('chat')">الدردشة (كروب وخاص)</button>
+      <button class="tab-btn" data-tab="notes" onclick="switchTab('notes')">المذكرات</button>
+      <button id="teamTabBtn" class="tab-btn hidden" data-tab="team" onclick="switchTab('team')">الفريق والصلاحيات</button>
+      <button id="auditTabBtn" class="tab-btn hidden" data-tab="audit" onclick="switchTab('audit')">سجل الرقابة</button>
+    </div>
+
+    <!-- قسم الطلبات -->
+    <section id="tab-orders">
+      <div class="grid-2">
+        <div id="createOrderCard" class="card">
+          <h3 style="margin-bottom:12px; color:var(--cyan);">توجيه طلب جديد</h3>
+          <div style="margin-bottom:10px;">
+            <label>عنوان الطلب / نوع العمل</label>
+            <input id="orderTitle" type="text" placeholder="مثال: فحص لوحة ATS أو صيانة كهرباء" />
+          </div>
+          <div style="margin-bottom:10px;">
+            <label>المحافظة / الموقع</label>
+            <input id="orderLocation" type="text" placeholder="مثال: النجف - حي الأمير" />
+          </div>
+          <div style="margin-bottom:10px;">
+            <label>إسناد إلى فني</label>
+            <select id="orderAssignee"></select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label>تفاصيل وملاحظات الطلب</label>
+            <textarea id="orderNotes" rows="3" placeholder="اكتب التفاصيل الفنية أو المواد المطلوبة..."></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="createOrder()">إرسال وتوجيه الطلب</button>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 style="color:var(--lime);">الطلبات النشطة والموزعة</h3>
+            <span id="ordersCount" class="badge badge-tech">0</span>
+          </div>
+          <div id="ordersList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم الدردشة -->
+    <section id="tab-chat" class="hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="color:var(--cyan);">الكروب العام للفريق</h3>
+            <span class="badge badge-mod">مباشر</span>
+          </div>
+          <div id="groupChatBox" class="chat-box"></div>
+          <div style="display:flex; gap:8px;">
+            <input id="groupChatInput" type="text" placeholder="اكتب رسالة للكروب العام..." onkeydown="if(event.key==='Enter') sendGroupMsg()" />
+            <button class="btn btn-primary" onclick="sendGroupMsg()">إرسال</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="color:var(--magenta); margin-bottom:10px;">دردشة خاصة</h3>
+          <div style="margin-bottom:10px;">
+            <label>اختر الشخص للمحادثة الخاصة</label>
+            <select id="dmPeerSelect" onchange="renderPrivateChat()"></select>
+          </div>
+          <div id="privateChatBox" class="chat-box"></div>
+          <div style="display:flex; gap:8px;">
+            <input id="privateChatInput" type="text" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter') sendPrivateMsg()" />
+            <button class="btn btn-magenta" onclick="sendPrivateMsg()">إرسال</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم المذكرات -->
+    <section id="tab-notes" class="hidden">
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="color:var(--lime); margin-bottom:12px;">إضافة مذكرة جديدة</h3>
+          <div style="margin-bottom:10px;">
+            <label>عنوان المذكرة</label>
+            <input id="noteTitle" type="text" placeholder="مثال: نواقص مواد أو ملاحظة متابعة" />
+          </div>
+          <div style="margin-bottom:10px;">
+            <label>نوع المذكرة</label>
+            <select id="noteScope">
+              <option value="private">مذكرتي الخاصة (لا يراها غيري)</option>
+              <option value="shared">مذكرة عمل مشتركة للفريق</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label>نص المذكرة</label>
+            <textarea id="noteBody" rows="3" placeholder="اكتب تفاصيل المذكرة هنا..."></textarea>
+          </div>
+          <button class="btn btn-lime" style="width:100%;" onclick="addNote()">حفظ المذكرة</button>
+        </div>
+
+        <div class="card">
+          <h3 style="color:var(--cyan); margin-bottom:12px;">المذكرات المحفوظة</h3>
+          <div id="notesList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم الفريق والصلاحيات -->
+    <section id="tab-team" class="hidden">
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="color:var(--warning); margin-bottom:10px;">طلبات بانتظار موافقتك</h3>
+        <div id="pendingUsersList"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="color:var(--lime); margin-bottom:10px;">إدارة الأعضاء وتفصيل صلاحيات المشرفين</h3>
+        <div id="activeUsersList"></div>
+      </div>
+    </section>
+
+    <!-- قسم سجل الرقابة -->
+    <section id="tab-audit" class="hidden">
+      <div class="card">
+        <h3 style="color:var(--magenta); margin-bottom:12px;">سجل الرقابة والحركات الإدارية</h3>
+        <div id="auditList"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- نافذة إعداد قاعدة البيانات -->
+  <div id="dbModal" class="modal-backdrop hidden">
+    <div class="card modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="color:var(--cyan);">إعدادات Firebase السحابية</h3>
+        <button class="btn btn-ghost" onclick="closeDbModal()">✕</button>
+      </div>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
+        الصق كائن <code>firebaseConfig</code> الخاص بمشروعك لحفظ البيانات لجميع المستخدمين عبر السحابة.
+      </p>
+      <textarea id="dbConfigInput" rows="8" placeholder='{\n  "apiKey": "...",\n  "authDomain": "...",\n  "projectId": "...",\n  "storageBucket": "...",\n  "messagingSenderId": "...",\n  "appId": "..."\n}'></textarea>
+      <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="saveDbConfig()">حفظ وربط السحابة</button>
+        <button class="btn btn-danger" onclick="clearDbConfig()">إزالة الربط (محلي)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "ZON_STATE_V1";
+    const DB_CFG_KEY = "ZON_FIREBASE_CFG_V1";
+
+    let authMode = "login";
+    let currentUser = null;
+
+    const defaultState = {
+      ownerEmail: null,
+      users: [],
+      orders: [
+        {
+          id: "ord-1",
+          title: "فحص لوحة ATS وتبديل قاطع",
+          location: "بغداد - الكرادة",
+          assigneeId: null,
+          assigneeName: "غير معيّن بعد",
+          notes: "التأكد من توازن الأطوار وزمن التحويل.",
+          status: "جديد",
+          createdAt: new Date().toISOString()
+        }
+      ],
+      groupMessages: [
+        {
+          id: "m-1",
+          senderId: "system",
+          senderName: "نظام ZON",
+          text: "مرحباً بكم في منصة ZON. يرجى توثيق تحديثات الطلبات أولاً بأول.",
+          time: new Date().toLocaleTimeString("ar-IQ", { hour: "2-digit", minute: "2-digit" })
+        }
+      ],
+      privateMessages: [],
+      notes: [
+        {
+          id: "n-1",
+          ownerId: "owner",
+          scope: "shared",
+          title: "تنبيه تشغيل ميداني",
+          body: "التأكد من فصل الطاقة وقياس الفولتية قبل بدء العمل على أي لوحة.",
+          createdAt: new Date().toLocaleDateString("ar-IQ")
+        }
+      ],
+      auditLogs: []
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(defaultState);
+        return { ...structuredClone(defaultState), ...JSON.parse(raw) };
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function maskEmail(email) {
+      if (!email || !email.includes("@")) return "***";
+      const [user, domain] = email.split("@");
+      return user.slice(0, 2) + "***@" + domain;
+    }
+
+    function addAudit(actor, action) {
+      state.auditLogs.unshift({
+        id: "aud-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+        actor: actor ? `${actor.name} (${actor.role})` : "النظام",
+        
