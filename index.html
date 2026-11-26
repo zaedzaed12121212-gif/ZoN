@@ -3,1275 +3,273 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZON — منصة إدارة الفرق والطلبات</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>ZON — تسجيل الدخول</title>
   <style>
-    :root {
-      --bg-obsidian: #07070d;
-      --bg-card: #10101c;
-      --bg-card-2: #171728;
-      --border-subtle: rgba(255, 255, 255, 0.1);
-      --text-main: #f4f4ff;
-      --text-muted: #9898b8;
-      --violet: #7c3aed;
-      --cyan: #06b6d4;
-      --lime: #a3e635;
-      --magenta: #ec4899;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Cairo', sans-serif;
-      -webkit-tap-highlight-color: rgba(6, 182, 212, 0.25);
+      font-family: Tahoma, Arial, sans-serif;
+      -webkit-tap-highlight-color: rgba(6, 182, 212, 0.3);
     }
 
     body {
-      background:
-        radial-gradient(circle at 12% 10%, rgba(124, 58, 237, 0.22), transparent 35%),
-        radial-gradient(circle at 88% 15%, rgba(6, 182, 212, 0.18), transparent 35%),
-        radial-gradient(circle at 50% 95%, rgba(236, 72, 153, 0.14), transparent 40%),
-        var(--bg-obsidian);
-      color: var(--text-main);
+      background: #090912;
+      color: #f4f4ff;
       min-height: 100vh;
-      line-height: 1.6;
-    }
-
-    .hidden { display: none !important; }
-
-    .container {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-    }
-
-    .btn {
-      border: none;
-      border-radius: 10px;
-      padding: 11px 16px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      touch-action: manipulation;
-      display: inline-flex;
+      padding: 20px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
     }
 
-    .btn:active { opacity: 0.85; }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--violet), var(--cyan));
-      color: #fff;
-    }
-
-    .btn-lime {
-      background: var(--lime);
-      color: #090c04;
-    }
-
-    .btn-magenta {
-      background: var(--magenta);
-      color: #fff;
-    }
-
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.18);
-      color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.45);
-    }
-
-    .btn-ghost {
-      background: var(--bg-card-2);
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-    }
-
-    input, select, textarea {
+    .box {
       width: 100%;
-      background: var(--bg-card-2);
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 14px;
-      outline: none;
+      max-width: 460px;
+      background: #131324;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      padding: 20px;
     }
 
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--cyan);
+    h1 {
+      color: #a3e635;
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      text-align: center;
+      color: #a5a5c8;
+      font-size: 13px;
+      margin-bottom: 18px;
     }
 
     label {
       display: block;
       font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    .brand-logo {
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      color: var(--lime);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .badge-owner { background: rgba(163, 230, 53, 0.18); color: var(--lime); border: 1px solid rgba(163, 230, 53, 0.4); }
-    .badge-mod { background: rgba(6, 182, 212, 0.18); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.4); }
-    .badge-tech { background: rgba(124, 58, 237, 0.2); color: #c4b5fd; border: 1px solid rgba(124, 58, 237, 0.4); }
-    .badge-pending { background: rgba(245, 158, 11, 0.18); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
-    .badge-banned { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
-
-    .auth-wrap {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-
-    .auth-box {
-      width: 100%;
-      max-width: 440px;
-    }
-
-    .topbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 18px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      margin-bottom: 16px;
-    }
-
-    .tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .tab-btn {
-      background: var(--bg-card);
-      color: var(--text-muted);
-      border: 1px solid var(--border-subtle);
-      padding: 9px 15px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(6, 182, 212, 0.28));
-      color: #fff;
-      border-color: var(--cyan);
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-    }
-
-    .item-row {
-      background: var(--bg-card-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 10px;
-    }
-
-    .chat-box {
-      height: 320px;
-      overflow-y: auto;
-      background: var(--bg-card-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .msg-bubble {
-      max-width: 82%;
-      padding: 9px 13px;
-      border-radius: 12px;
-      font-size: 14px;
-      background: rgba(124, 58, 237, 0.22);
-      border: 1px solid rgba(124, 58, 237, 0.35);
-      align-self: flex-start;
-    }
-
-    .msg-bubble.mine {
-      background: rgba(6, 182, 212, 0.22);
-      border-color: rgba(6, 182, 212, 0.4);
-      align-self: flex-end;
-    }
-
-    .msg-meta {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 3px;
-    }
-
-    .perm-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 8px;
+      color: #c7c7e2;
+      margin-bottom: 6px;
       margin-top: 10px;
     }
 
-    .perm-check {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      background: var(--bg-card);
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border-subtle);
-      font-size: 12.5px;
-      cursor: pointer;
-    }
-
-    .perm-check input { width: auto; }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 999;
-    }
-
-    .modal-card {
+    input, textarea, select {
       width: 100%;
-      max-width: 560px;
-      max-height: 90vh;
-      overflow-y: auto;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: #1c1c34;
+      color: #fff;
+      font-size: 15px;
     }
 
-    .status-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-left: 6px;
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 12px;
+      touch-action: manipulation;
     }
 
-    .dot-cloud { background: var(--lime); }
-    .dot-local { background: var(--warning); }
+    .btn-main {
+      background: #7c3aed;
+      color: #fff;
+    }
+
+    .btn-cyan {
+      background: #06b6d4;
+      color: #061014;
+    }
+
+    .btn-lime {
+      background: #a3e635;
+      color: #0b1102;
+    }
+
+    .btn-dark {
+      background: #252542;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .row-2 {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row-2 .btn {
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .msg-box {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #1b1b30;
+      border: 1px solid #06b6d4;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .card-item {
+      background: #1b1b30;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 
-  <div id="authScreen" class="auth-wrap">
-    <div class="card auth-box">
-      <div style="text-align:center; margin-bottom:18px;">
-        <h1 class="brand-logo" style="font-size:34px;">ZON</h1>
-        <p style="color:var(--text-muted); font-size:13px;">نظام إدارة الطلبات والفرق والمذكرات</p>
-        <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">
-          <span id="connDot" class="status-dot dot-local"></span>
-          <span id="connText">وضع التخزين المحلي (جاهز للربط السحابي)</span>
-        </div>
-      </div>
+  <div id="loginView" class="box">
+    <h1>ZON</h1>
+    <div class="sub">إدارة الطلبات والفرق والصيانة</div>
 
-      <div style="display:flex; gap:8px; margin-bottom:14px;">
-        <button id="modeLoginBtn" type="button" class="btn btn-primary" style="flex:1;" onclick="switchAuthMode('login')">تسجيل الدخول</button>
-        <button id="modeRegisterBtn" type="button" class="btn btn-ghost" style="flex:1;" onclick="switchAuthMode('register')">حساب جديد</button>
-      </div>
-
-      <div id="nameFieldWrap" class="hidden" style="margin-bottom:10px;">
-        <label>الاسم الكامل</label>
-        <input id="authName" type="text" placeholder="مثال: علي حسن" />
-      </div>
-
-      <div id="roleFieldWrap" class="hidden" style="margin-bottom:10px;">
-        <label>الصفة المطلوبة (تُعتمد بعد موافقة الإدارة)</label>
-        <select id="authRequestedRole">
-          <option value="tech">فني ميداني</option>
-          <option value="mod">مشرف</option>
-        </select>
-      </div>
-
-      <div style="margin-bottom:10px;">
-        <label>البريد الإلكتروني</label>
-        <input id="authEmail" type="email" placeholder="example@mail.com" />
-      </div>
-
-      <div style="margin-bottom:14px;">
-        <label>كلمة المرور</label>
-        <input id="authPassword" type="password" placeholder="••••••••" />
-      </div>
-
-      <button id="authSubmitBtn" type="button" class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="submitAuth()">دخول إلى ZON</button>
-
-      <div style="display:flex; gap:8px;">
-        <button type="button" class="btn btn-ghost" style="flex:1; font-size:12.5px;" onclick="openDbModal()">إعداد قاعدة البيانات</button>
-        <button type="button" class="btn btn-lime" style="flex:1; font-size:12.5px;" onclick="quickOwnerDemo()">دخول تجريبي كمالك</button>
-      </div>
+    <div class="row-2">
+      <button id="tabLogin" type="button" class="btn btn-main">تسجيل الدخول</button>
+      <button id="tabReg" type="button" class="btn btn-dark">حساب جديد</button>
     </div>
+
+    <div id="regNameWrap" class="hidden">
+      <label>الاسم الكامل</label>
+      <input id="fullName" type="text" placeholder="اكتب اسمك" />
+    </div>
+
+    <label>البريد الإلكتروني</label>
+    <input id="emailInp" type="email" placeholder="example@mail.com" />
+
+    <label>كلمة المرور</label>
+    <input id="passInp" type="password" placeholder="••••••••" />
+
+    <button id="submitAuthBtn" type="button" class="btn btn-cyan">دخول إلى ZON</button>
+    <button id="demoOwnerBtn" type="button" class="btn btn-lime">دخول تجريبي كمالك</button>
+
+    <div id="statusMsg" class="msg-box hidden"></div>
   </div>
 
-  <div id="gateScreen" class="auth-wrap hidden">
-    <div class="card auth-box" style="text-align:center;">
-      <h2 class="brand-logo" style="font-size:26px; margin-bottom:8px;">ZON</h2>
-      <div id="gateBadge" style="margin-bottom:12px;"></div>
-      <h3 id="gateTitle" style="margin-bottom:8px;">حسابك قيد المراجعة</h3>
-      <p id="gateDesc" style="color:var(--text-muted); font-size:14px; margin-bottom:18px;">
-        تم تسجيل بريدك الإلكتروني بنجاح. لن يتم عرض أي بيانات أو محادثات حتى يوافق مالك النظام على حسابك ويحدد صلاحياتك.
-      </p>
-      <button type="button" class="btn btn-ghost" onclick="logout()">تسجيل الخروج</button>
-    </div>
-  </div>
+  <div id="appView" class="box hidden">
+    <h1>ZON</h1>
+    <div id="userInfo" class="sub"></div>
 
-  <div id="appScreen" class="container hidden">
-    <div class="topbar">
-      <div>
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <span class="brand-logo" style="font-size:24px;">ZON</span>
-          <span id="currentUserBadge"></span>
-          <span style="font-size:12px; color:var(--text-muted);">
-            <span id="appConnDot" class="status-dot dot-local"></span>
-            <span id="appConnLabel">محلي</span>
-          </span>
-        </div>
-        <div id="currentUserSub" style="font-size:12px; color:var(--text-muted); margin-top:2px;"></div>
-      </div>
+    <label>إضافة طلب جديد</label>
+    <input id="orderTitle" type="text" placeholder="مثال: صيانة لوحة أو تمديد كهرباء" />
+    <input id="orderArea" type="text" placeholder="المنطقة / العنوان" style="margin-top:8px;" />
+    <button id="addOrderBtn" type="button" class="btn btn-lime">إضافة الطلب</button>
 
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button id="dbConfigBtn" type="button" class="btn btn-ghost" onclick="openDbModal()">قاعدة البيانات</button>
-        <button type="button" class="btn btn-danger" onclick="logout()">خروج</button>
-      </div>
-    </div>
+    <div id="ordersContainer"></div>
 
-    <div class="tabs">
-      <button type="button" class="tab-btn active" data-tab="orders" onclick="switchTab('orders')">الطلبات</button>
-      <button type="button" class="tab-btn" data-tab="chat" onclick="switchTab('chat')">الدردشة (كروب وخاص)</button>
-      <button type="button" class="tab-btn" data-tab="notes" onclick="switchTab('notes')">المذكرات</button>
-      <button id="teamTabBtn" type="button" class="tab-btn hidden" data-tab="team" onclick="switchTab('team')">الفريق والصلاحيات</button>
-      <button id="auditTabBtn" type="button" class="tab-btn hidden" data-tab="audit" onclick="switchTab('audit')">سجل الرقابة</button>
-    </div>
-
-    <section id="tab-orders">
-      <div class="grid-2">
-        <div id="createOrderCard" class="card">
-          <h3 style="margin-bottom:12px; color:var(--cyan);">توجيه طلب جديد</h3>
-          <div style="margin-bottom:10px;">
-            <label>عنوان الطلب / نوع العمل</label>
-            <input id="orderTitle" type="text" placeholder="مثال: فحص لوحة ATS أو صيانة كهرباء" />
-          </div>
-          <div style="margin-bottom:10px;">
-            <label>المحافظة / الموقع</label>
-            <input id="orderLocation" type="text" placeholder="مثال: النجف - حي الأمير" />
-          </div>
-          <div style="margin-bottom:10px;">
-            <label>إسناد إلى فني</label>
-            <select id="orderAssignee"></select>
-          </div>
-          <div style="margin-bottom:12px;">
-            <label>تفاصيل وملاحظات الطلب</label>
-            <textarea id="orderNotes" rows="3" placeholder="اكتب التفاصيل الفنية أو المواد المطلوبة..."></textarea>
-          </div>
-          <button type="button" class="btn btn-primary" style="width:100%;" onclick="createOrder()">إرسال وتوجيه الطلب</button>
-        </div>
-
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h3 style="color:var(--lime);">الطلبات النشطة والموزعة</h3>
-            <span id="ordersCount" class="badge badge-tech">0</span>
-          </div>
-          <div id="ordersList"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-chat" class="hidden">
-      <div class="grid-2">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 style="color:var(--cyan);">الكروب العام للفريق</h3>
-            <span class="badge badge-mod">مباشر</span>
-          </div>
-          <div id="groupChatBox" class="chat-box"></div>
-          <div style="display:flex; gap:8px;">
-            <input id="groupChatInput" type="text" placeholder="اكتب رسالة للكروب العام..." />
-            <button type="button" class="btn btn-primary" onclick="sendGroupMsg()">إرسال</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 style="color:var(--magenta); margin-bottom:10px;">دردشة خاصة</h3>
-          <div style="margin-bottom:10px;">
-            <label>اختر الشخص للمحادثة الخاصة</label>
-            <select id="dmPeerSelect" onchange="renderPrivateChat()"></select>
-          </div>
-          <div id="privateChatBox" class="chat-box"></div>
-          <div style="display:flex; gap:8px;">
-            <input id="privateChatInput" type="text" placeholder="اكتب رسالة خاصة..." />
-            <button type="button" class="btn btn-magenta" onclick="sendPrivateMsg()">إرسال</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-notes" class="hidden">
-      <div class="grid-2">
-        <div class="card">
-          <h3 style="color:var(--lime); margin-bottom:12px;">إضافة مذكرة جديدة</h3>
-          <div style="margin-bottom:10px;">
-            <label>عنوان المذكرة</label>
-            <input id="noteTitle" type="text" placeholder="مثال: نواقص مواد أو ملاحظة متابعة" />
-          </div>
-          <div style="margin-bottom:10px;">
-            <label>نوع المذكرة</label>
-            <select id="noteScope">
-              <option value="private">مذكرتي الخاصة (لا يراها غيري)</option>
-              <option value="shared">مذكرة عمل مشتركة للفريق</option>
-            </select>
-          </div>
-          <div style="margin-bottom:12px;">
-            <label>نص المذكرة</label>
-            <textarea id="noteBody" rows="3" placeholder="اكتب تفاصيل المذكرة هنا..."></textarea>
-          </div>
-          <button type="button" class="btn btn-lime" style="width:100%;" onclick="addNote()">حفظ المذكرة</button>
-        </div>
-
-        <div class="card">
-          <h3 style="color:var(--cyan); margin-bottom:12px;">المذكرات المحفوظة</h3>
-          <div id="notesList"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-team" class="hidden">
-      <div class="card" style="margin-bottom:16px;">
-        <h3 style="color:var(--warning); margin-bottom:10px;">طلبات بانتظار موافقتك</h3>
-        <div id="pendingUsersList"></div>
-      </div>
-
-      <div class="card">
-        <h3 style="color:var(--lime); margin-bottom:10px;">إدارة الأعضاء وتفصيل صلاحيات المشرفين</h3>
-        <div id="activeUsersList"></div>
-      </div>
-    </section>
-
-    <section id="tab-audit" class="hidden">
-      <div class="card">
-        <h3 style="color:var(--magenta); margin-bottom:12px;">سجل الرقابة والحركات الإدارية</h3>
-        <div id="auditList"></div>
-      </div>
-    </section>
-  </div>
-
-  <div id="dbModal" class="modal-backdrop hidden">
-    <div class="card modal-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 style="color:var(--cyan);">إعدادات Firebase السحابية</h3>
-        <button type="button" class="btn btn-ghost" onclick="closeDbModal()">✕</button>
-      </div>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
-        الصق كائن firebaseConfig الخاص بمشروعك لحفظ البيانات لجميع المستخدمين عبر السحابة.
-      </p>
-      <textarea id="dbConfigInput" rows="8" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
-      <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-        <button type="button" class="btn btn-primary" onclick="saveDbConfig()">حفظ وربط السحابة</button>
-        <button type="button" class="btn btn-danger" onclick="clearDbConfig()">إزالة الربط (محلي)</button>
-      </div>
-    </div>
+    <button id="logoutBtn" type="button" class="btn btn-dark" style="margin-top:18px;">تسجيل الخروج</button>
   </div>
 
   <script>
-    var STORAGE_KEY = "ZON_STATE_V2";
-    var DB_CFG_KEY = "ZON_FIREBASE_CFG_V1";
-    var authMode = "login";
-    var currentUser = null;
+    (function () {
+      var mode = "login";
+      var orders = [
+        { title: "فحص لوحة كهرباء وتوزيع أحمال", area: "النجف" }
+      ];
 
-    function cloneData(obj) {
-      return JSON.parse(JSON.stringify(obj));
-    }
-
-    var defaultState = {
-      ownerEmail: null,
-      users: [],
-      orders: [
-        {
-          id: "ord-1",
-          title: "فحص لوحة ATS وتبديل قاطع",
-          location: "بغداد - الكرادة",
-          assigneeId: null,
-          assigneeName: "غير معيّن بعد",
-          notes: "التأكد من توازن الأطوار وزمن التحويل.",
-          status: "جديد",
-          createdAt: new Date().toLocaleString("ar-IQ")
-        }
-      ],
-      groupMessages: [
-        {
-          id: "m-1",
-          senderId: "system",
-          senderName: "نظام ZON",
-          text: "مرحباً بكم في منصة ZON. يرجى توثيق تحديثات الطلبات أولاً بأول.",
-          time: new Date().toLocaleTimeString("ar-IQ", { hour: "2-digit", minute: "2-digit" })
-        }
-      ],
-      privateMessages: [],
-      notes: [
-        {
-          id: "n-1",
-          ownerId: "owner",
-          scope: "shared",
-          title: "تنبيه تشغيل ميداني",
-          body: "التأكد من فصل الطاقة وقياس الفولتية قبل بدء العمل على أي لوحة.",
-          createdAt: new Date().toLocaleDateString("ar-IQ")
-        }
-      ],
-      auditLogs: []
-    };
-
-    function loadState() {
-      try {
-        var raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return cloneData(defaultState);
-        var parsed = JSON.parse(raw);
-        return {
-          ownerEmail: parsed.ownerEmail || null,
-          users: parsed.users || [],
-          orders: parsed.orders || cloneData(defaultState.orders),
-          groupMessages: parsed.groupMessages || cloneData(defaultState.groupMessages),
-          privateMessages: parsed.privateMessages || [],
-          notes: parsed.notes || cloneData(defaultState.notes),
-          auditLogs: parsed.auditLogs || []
-        };
-      } catch (e) {
-        return cloneData(defaultState);
-      }
-    }
-
-    var state = loadState();
-
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (e) {}
-    }
-
-    function maskEmail(email) {
-      if (!email || email.indexOf("@") === -1) return "***";
-      var parts = email.split("@");
-      return parts[0].slice(0, 2) + "***@" + parts[1];
-    }
-
-    function addAudit(actor, action) {
-      state.auditLogs.unshift({
-        id: "aud-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
-        actor: actor ? actor.name + " (" + actor.role + ")" : "النظام",
-        action: action,
-        time: new Date().toLocaleString("ar-IQ")
-      });
-      if (state.auditLogs.length > 150) state.auditLogs.pop();
-      saveState();
-    }
-
-    function switchAuthMode(mode) {
-      authMode = mode;
-      var isReg = mode === "register";
-      document.getElementById("modeLoginBtn").className = isReg ? "btn btn-ghost" : "btn btn-primary";
-      document.getElementById("modeRegisterBtn").className = isReg ? "btn btn-primary" : "btn btn-ghost";
-      document.getElementById("nameFieldWrap").classList.toggle("hidden", !isReg);
-      document.getElementById("roleFieldWrap").classList.toggle("hidden", !isReg);
-      document.getElementById("authSubmitBtn").textContent = isReg ? "إنشاء حساب" : "دخول إلى ZON";
-    }
-
-    function quickOwnerDemo() {
-      var owner = null;
-      for (var i = 0; i < state.users.length; i++) {
-        if (state.users[i].role === "owner") {
-          owner = state.users[i];
-          break;
-        }
-      }
-      if (!owner) {
-        owner = {
-          id: "u-owner",
-          name: "المدير العام (ZON)",
-          email: state.ownerEmail || "owner@zon.local",
-          role: "owner",
-          status: "active",
-          perms: { assignOrders: true, approveUsers: true, banUsers: true, viewAudit: true }
-        };
-        state.ownerEmail = owner.email;
-        state.users.unshift(owner);
-        addAudit(owner, "تم تفعيل حساب المالك الوحيد لمنصة ZON");
-        saveState();
-      }
-      currentUser = owner;
-      enterApp();
-    }
-
-    function submitAuth() {
-      var email = (document.getElementById("authEmail").value || "").trim().toLowerCase();
-      var pass = (document.getElementById("authPassword").value || "").trim();
-      var name = (document.getElementById("authName").value || "").trim();
-      var requestedRole = document.getElementById("authRequestedRole").value;
-
-      if (!email || !pass) {
-        alert("يرجى إدخال البريد الإلكتروني وكلمة المرور.");
-        return;
+      function byId(id) {
+        return document.getElementById(id);
       }
 
-      if (authMode === "register") {
-        if (!name) {
-          alert("يرجى إدخال الاسم الكامل.");
+      function showStatus(text) {
+        var el = byId("statusMsg");
+        el.textContent = text;
+        el.classList.remove("hidden");
+      }
+
+      function openApp(userName, roleLabel) {
+        byId("loginView").classList.add("hidden");
+        byId("appView").classList.remove("hidden");
+        byId("userInfo").textContent = "المستخدم: " + userName + " (" + roleLabel + ")";
+        renderOrders();
+      }
+
+      function renderOrders() {
+        var wrap = byId("ordersContainer");
+        if (!orders.length) {
+          wrap.innerHTML = '<div class="card-item">لا توجد طلبات حالياً.</div>';
           return;
         }
-        var exists = state.users.some(function(u) { return u.email === email; });
-        if (exists) {
-          alert("هذا البريد الإلكتروني مسجل مسبقاً.");
+        var html = "";
+        for (var i = 0; i < orders.length; i++) {
+          html += '<div class="card-item"><strong>' + escapeText(orders[i].title) + '</strong><div style="color:#a5a5c8;font-size:13px;margin-top:4px;">الموقع: ' + escapeText(orders[i].area || "غير محدد") + '</div></div>';
+        }
+        wrap.innerHTML = html;
+      }
+
+      function escapeText(str) {
+        return String(str || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      byId("tabLogin").addEventListener("click", function () {
+        mode = "login";
+        byId("tabLogin").className = "btn btn-main";
+        byId("tabReg").className = "btn btn-dark";
+        byId("regNameWrap").classList.add("hidden");
+        byId("submitAuthBtn").textContent = "دخول إلى ZON";
+      });
+
+      byId("tabReg").addEventListener("click", function () {
+        mode = "register";
+        byId("tabReg").className = "btn btn-main";
+        byId("tabLogin").className = "btn btn-dark";
+        byId("regNameWrap").classList.remove("hidden");
+        byId("submitAuthBtn").textContent = "إنشاء حساب";
+      });
+
+      byId("submitAuthBtn").addEventListener("click", function () {
+        var email = (byId("emailInp").value || "").trim();
+        var pass = (byId("passInp").value || "").trim();
+        var name = (byId("fullName").value || "").trim();
+
+        if (!email || !pass) {
+          showStatus("يرجى إدخال البريد الإلكتروني وكلمة المرور.");
           return;
         }
-
-        var isFirstOwner = !state.ownerEmail && state.users.length === 0;
-        var newUser = {
-          id: "u-" + Date.now(),
-          name: name,
-          email: email,
-          pass: pass,
-          role: isFirstOwner ? "owner" : requestedRole,
-          status: isFirstOwner ? "active" : "pending",
-          perms: {
-            assignOrders: isFirstOwner,
-            approveUsers: isFirstOwner,
-            banUsers: isFirstOwner,
-            viewAudit: isFirstOwner
-          }
-        };
-
-        if (isFirstOwner) {
-          state.ownerEmail = email;
-          addAudit(newUser, "تم تثبيت المالك الوحيد للنظام عبر البريد الإلكتروني");
-        } else {
-          addAudit(newUser, "طلب انضمام جديد بصفة (" + (requestedRole === "mod" ? "مشرف" : "فني") + ") بانتظار الموافقة");
-        }
-
-        state.users.push(newUser);
-        saveState();
-        currentUser = newUser;
-        routeUser();
-        return;
-      }
-
-      var found = null;
-      for (var j = 0; j < state.users.length; j++) {
-        if (state.users[j].email === email) {
-          found = state.users[j];
-          break;
-        }
-      }
-
-      if (!found) {
-        if (!state.ownerEmail && state.users.length === 0) {
-          var owner = {
-            id: "u-owner-" + Date.now(),
-            name: "مالك منصة ZON",
-            email: email,
-            pass: pass,
-            role: "owner",
-            status: "active",
-            perms: { assignOrders: true, approveUsers: true, banUsers: true, viewAudit: true }
-          };
-          state.ownerEmail = email;
-          state.users.push(owner);
-          addAudit(owner, "تم تسجيل ملكية النظام لأول مرة");
-          saveState();
-          currentUser = owner;
-          routeUser();
+        if (mode === "register" && !name) {
+          showStatus("يرجى كتابة الاسم الكامل لإنشاء الحساب.");
           return;
         }
-        alert("الحساب غير موجود. يمكنك إنشاء حساب جديد وانتظار موافقة الإدارة.");
-        return;
-      }
-
-      if (found.pass && found.pass !== pass) {
-        alert("كلمة المرور غير صحيحة.");
-        return;
-      }
-
-      currentUser = found;
-      routeUser();
-    }
-
-    function routeUser() {
-      document.getElementById("authScreen").classList.add("hidden");
-      if (currentUser.status === "pending") {
-        document.getElementById("gateScreen").classList.remove("hidden");
-        document.getElementById("gateBadge").innerHTML = '<span class="badge badge-pending">بانتظار الموافقة</span>';
-        document.getElementById("gateTitle").textContent = "حسابك قيد انتظار موافقة الإدارة";
-        document.getElementById("gateDesc").textContent =
-          "تم استلام طلب تسجيلك. لا يُسمح بالدخول إلى لوحة ZON أو الدردشات أو الطلبات إلا بعد موافقة المالك وتحديد صلاحياتك.";
-        return;
-      }
-      if (currentUser.status === "banned") {
-        document.getElementById("gateScreen").classList.remove("hidden");
-        document.getElementById("gateBadge").innerHTML = '<span class="badge badge-banned">تم إيقاف الحساب</span>';
-        document.getElementById("gateTitle").textContent = "تم تجميد / إيقاف هذا الحساب";
-        document.getElementById("gateDesc").textContent =
-          "تم إيقاف صلاحية الوصول لهذا الحساب من قِبل الإدارة. تواصل مع الإدارة في حال وجود مراجعة.";
-        return;
-      }
-      document.getElementById("gateScreen").classList.add("hidden");
-      enterApp();
-    }
-
-    function logout() {
-      currentUser = null;
-      document.getElementById("appScreen").classList.add("hidden");
-      document.getElementById("gateScreen").classList.add("hidden");
-      document.getElementById("authScreen").classList.remove("hidden");
-    }
-
-    function canAssignOrders() {
-      return currentUser.role === "owner" || (currentUser.role === "mod" && currentUser.perms && currentUser.perms.assignOrders);
-    }
-
-    function canApproveUsers() {
-      return currentUser.role === "owner" || (currentUser.role === "mod" && currentUser.perms && currentUser.perms.approveUsers);
-    }
-
-    function canBanUsers() {
-      return currentUser.role === "owner" || (currentUser.role === "mod" && currentUser.perms && currentUser.perms.banUsers);
-    }
-
-    function canViewAudit() {
-      return currentUser.role === "owner" || (currentUser.role === "mod" && currentUser.perms && currentUser.perms.viewAudit);
-    }
-
-    function roleLabel(role) {
-      if (role === "owner") return '<span class="badge badge-owner">المالك الوحيد</span>';
-      if (role === "mod") return '<span class="badge badge-mod">مشرف</span>';
-      return '<span class="badge badge-tech">فني</span>';
-    }
-
-    function enterApp() {
-      document.getElementById("appScreen").classList.remove("hidden");
-      document.getElementById("currentUserBadge").innerHTML =
-        "<strong>" + escapeHtml(currentUser.name) + "</strong> " + roleLabel(currentUser.role);
-      document.getElementById("currentUserSub").textContent =
-        currentUser.role === "owner"
-          ? "البريد المالك: " + maskEmail(currentUser.email)
-          : "الحساب: " + maskEmail(currentUser.email);
-
-      document.getElementById("dbConfigBtn").classList.toggle("hidden", currentUser.role !== "owner");
-      document.getElementById("createOrderCard").classList.toggle("hidden", !canAssignOrders());
-      document.getElementById("teamTabBtn").classList.toggle("hidden", !(canApproveUsers() || canBanUsers() || currentUser.role === "owner"));
-      document.getElementById("auditTabBtn").classList.toggle("hidden", !canViewAudit());
-
-      populateAssignees();
-      populateDmPeers();
-      renderOrders();
-      renderGroupChat();
-      renderPrivateChat();
-      renderNotes();
-      renderTeam();
-      renderAudit();
-    }
-
-    function switchTab(tab) {
-      var btns = document.querySelectorAll(".tab-btn");
-      for (var i = 0; i < btns.length; i++) {
-        btns[i].classList.toggle("active", btns[i].getAttribute("data-tab") === tab);
-      }
-      var tabs = ["orders", "chat", "notes", "team", "audit"];
-      for (var j = 0; j < tabs.length; j++) {
-        document.getElementById("tab-" + tabs[j]).classList.toggle("hidden", tabs[j] !== tab);
-      }
-    }
-
-    function populateAssignees() {
-      var sel = document.getElementById("orderAssignee");
-      var activeStaff = state.users.filter(function(u) { return u.status === "active" && u.role !== "owner"; });
-      sel.innerHTML = '<option value="">غير معيّن بعد</option>' + activeStaff.map(function(u) {
-        return '<option value="' + u.id + '">' + escapeHtml(u.name) + ' (' + (u.role === "mod" ? "مشرف" : "فني") + ')</option>';
-      }).join("");
-    }
-
-    function createOrder() {
-      if (!canAssignOrders()) {
-        alert("ليس لديك صلاحية توجيه الطلبات.");
-        return;
-      }
-      var title = (document.getElementById("orderTitle").value || "").trim();
-      var location = (document.getElementById("orderLocation").value || "").trim();
-      var assigneeId = document.getElementById("orderAssignee").value;
-      var notes = (document.getElementById("orderNotes").value || "").trim();
-
-      if (!title) {
-        alert("يرجى كتابة عنوان الطلب.");
-        return;
-      }
-
-      var assignee = null;
-      for (var i = 0; i < state.users.length; i++) {
-        if (state.users[i].id === assigneeId) {
-          assignee = state.users[i];
-          break;
-        }
-      }
-
-      var order = {
-        id: "ord-" + Date.now(),
-        title: title,
-        location: location || "غير محدد",
-        assigneeId: assignee ? assignee.id : null,
-        assigneeName: assignee ? assignee.name : "غير معيّن بعد",
-        notes: notes,
-        status: "قيد التنفيذ",
-        createdAt: new Date().toLocaleString("ar-IQ")
-      };
-
-      state.orders.unshift(order);
-      addAudit(currentUser, 'أنشأ ووجّه الطلب "' + title + '" إلى (' + order.assigneeName + ')');
-      saveState();
-
-      document.getElementById("orderTitle").value = "";
-      document.getElementById("orderLocation").value = "";
-      document.getElementById("orderNotes").value = "";
-      renderOrders();
-      renderAudit();
-    }
-
-    function updateOrderStatus(orderId, status) {
-      for (var i = 0; i < state.orders.length; i++) {
-        if (state.orders[i].id === orderId) {
-          state.orders[i].status = status;
-          addAudit(currentUser, 'حدّث حالة الطلب "' + state.orders[i].title + '" إلى (' + status + ')');
-          saveState();
-          renderOrders();
-          renderAudit();
-          break;
-        }
-      }
-    }
-
-    function renderOrders() {
-      var list = document.getElementById("ordersList");
-      var visible = currentUser.role === "tech"
-        ? state.orders.filter(function(o) { return o.assigneeId === currentUser.id || !o.assigneeId; })
-        : state.orders;
-
-      document.getElementById("ordersCount").textContent = visible.length;
-
-      if (!visible.length) {
-        list.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">لا توجد طلبات حالياً.</p>';
-        return;
-      }
-
-      list.innerHTML = visible.map(function(o) {
-        return (
-          '<div class="item-row">' +
-            '<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">' +
-              '<strong>' + escapeHtml(o.title) + '</strong>' +
-              '<span class="badge badge-mod">' + escapeHtml(o.status) + '</span>' +
-            '</div>' +
-            '<div style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">' +
-              'الموقع: ' + escapeHtml(o.location) + ' • الفني: ' + escapeHtml(o.assigneeName) +
-            '</div>' +
-            (o.notes ? '<p style="font-size:13px; margin-top:6px;">' + escapeHtml(o.notes) + '</p>' : '') +
-            '<div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">' +
-              '<button type="button" class="btn btn-ghost" style="padding:5px 10px; font-size:12px;" onclick="updateOrderStatus(\'' + o.id + '\', \'جاري العمل\')">جاري العمل</button>' +
-              '<button type="button" class="btn btn-lime" style="padding:5px 10px; font-size:12px;" onclick="updateOrderStatus(\'' + o.id + '\', \'مكتمل\')">مكتمل</button>' +
-            '</div>' +
-          '</div>'
-        );
-      }).join("");
-    }
-
-    function sendGroupMsg() {
-      var inp = document.getElementById("groupChatInput");
-      var text = (inp.value || "").trim();
-      if (!text) return;
-
-      state.groupMessages.push({
-        id: "gm-" + Date.now(),
-        senderId: currentUser.id,
-        senderName: currentUser.name,
-        text: text,
-        time: new Date().toLocaleTimeString("ar-IQ", { hour: "2-digit", minute: "2-digit" })
-      });
-      inp.value = "";
-      saveState();
-      renderGroupChat();
-    }
-
-    function renderGroupChat() {
-      var box = document.getElementById("groupChatBox");
-      box.innerHTML = state.groupMessages.map(function(m) {
-        var mine = m.senderId === currentUser.id;
-        return (
-          '<div class="msg-bubble ' + (mine ? "mine" : "") + '">' +
-            '<div class="msg-meta">' + escapeHtml(m.senderName) + ' • ' + escapeHtml(m.time) + '</div>' +
-            '<div>' + escapeHtml(m.text) + '</div>' +
-          '</div>'
-        );
-      }).join("");
-      box.scrollTop = box.scrollHeight;
-    }
-
-    function populateDmPeers() {
-      var sel = document.getElementById("dmPeerSelect");
-      var peers = state.users.filter(function(u) { return u.status === "active" && u.id !== currentUser.id; });
-      if (!peers.length) {
-        sel.innerHTML = '<option value="">لا يوجد أعضاء نشطون آخرون بعد</option>';
-        return;
-      }
-      sel.innerHTML = peers.map(function(u) {
-        return '<option value="' + u.id + '">' + escapeHtml(u.name) + ' (' + (u.role === "owner" ? "المالك" : u.role === "mod" ? "مشرف" : "فني") + ')</option>';
-      }).join("");
-    }
-
-    function sendPrivateMsg() {
-      var peerId = document.getElementById("dmPeerSelect").value;
-      var inp = document.getElementById("privateChatInput");
-      var text = (inp.value || "").trim();
-      if (!peerId || !text) return;
-
-      state.privateMessages.push({
-        id: "pm-" + Date.now(),
-        fromId: currentUser.id,
-        fromName: currentUser.name,
-        toId: peerId,
-        text: text,
-        time: new Date().toLocaleTimeString("ar-IQ", { hour: "2-digit", minute: "2-digit" })
-      });
-      inp.value = "";
-      saveState();
-      renderPrivateChat();
-    }
-
-    function renderPrivateChat() {
-      var peerId = document.getElementById("dmPeerSelect").value;
-      var box = document.getElementById("privateChatBox");
-      if (!peerId) {
-        box.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">اختر عضواً لبدء محادثة خاصة.</p>';
-        return;
-      }
-      var msgs = state.privateMessages.filter(function(m) {
-        return (m.fromId === currentUser.id && m.toId === peerId) || (m.fromId === peerId && m.toId === currentUser.id);
-      });
-      if (!msgs.length) {
-        box.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">لا توجد رسائل خاصة بعد.</p>';
-        return;
-      }
-      box.innerHTML = msgs.map(function(m) {
-        var mine = m.fromId === currentUser.id;
-        return (
-          '<div class="msg-bubble ' + (mine ? "mine" : "") + '">' +
-            '<div class="msg-meta">' + escapeHtml(m.fromName) + ' • ' + escapeHtml(m.time) + '</div>' +
-            '<div>' + escapeHtml(m.text) + '</div>' +
-          '</div>'
-        );
-      }).join("");
-      box.scrollTop = box.scrollHeight;
-    }
-
-    function addNote() {
-      var title = (document.getElementById("noteTitle").value || "").trim();
-      var scope = document.getElementById("noteScope").value;
-      var body = (document.getElementById("noteBody").value || "").trim();
-      if (!title && !body) {
-        alert("اكتب عنواناً أو نصاً للمذكرة.");
-        return;
-      }
-
-      state.notes.unshift({
-        id: "n-" + Date.now(),
-        ownerId: currentUser.id,
-        ownerName: currentUser.name,
-        scope: scope,
-        title: title || "مذكرة بدون عنوان",
-        body: body,
-        createdAt: new Date().toLocaleDateString("ar-IQ")
+        openApp(name || email, mode === "register" ? "حساب جديد" : "مستخدم");
       });
 
-      document.getElementById("noteTitle").value = "";
-      document.getElementById("noteBody").value = "";
-      saveState();
-      renderNotes();
-    }
+      byId("demoOwnerBtn").addEventListener("click", function () {
+        openApp("مالك النظام", "مالك");
+      });
 
-    function renderNotes() {
-      var list = document.getElementById("notesList");
-      var visible = state.notes.filter(function(n) { return n.scope === "shared" || n.ownerId === currentUser.id; });
-      if (!visible.length) {
-        list.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">لا توجد مذكرات محفوظة.</p>';
-        return;
-      }
-      list.innerHTML = visible.map(function(n) {
-        return (
-          '<div class="item-row">' +
-            '<div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">' +
-              '<strong>' + escapeHtml(n.title) + '</strong>' +
-              '<span class="badge ' + (n.scope === "private" ? "badge-owner" : "badge-mod") + '">' +
-                (n.scope === "private" ? "خاصة بي" : "مشتركة") +
-              '</span>' +
-            '</div>' +
-            '<p style="font-size:13.5px; margin-top:6px;">' + escapeHtml(n.body) + '</p>' +
-            '<div style="font-size:11.5px; color:var(--text-muted); margin-top:6px;">' + escapeHtml(n.createdAt) + '</div>' +
-          '</div>'
-        );
-      }).join("");
-    }
-
-    function approveUser(userId, role) {
-      if (!canApproveUsers()) {
-        alert("ليس لديك صلاحية الموافقة على الأعضاء.");
-        return;
-      }
-      for (var i = 0; i < state.users.length; i++) {
-        if (state.users[i].id === userId) {
-          var u = state.users[i];
-          u.status = "active";
-          u.role = role;
-          if (role === "mod" && !u.perms) {
-            u.perms = { assignOrders: true, approveUsers: false, banUsers: false, viewAudit: false };
-          }
-          addAudit(currentUser, "وافق على انضمام (" + u.name + ") بصفة (" + (role === "mod" ? "مشرف" : "فني") + ")");
-          saveState();
-          populateAssignees();
-          populateDmPeers();
-          renderTeam();
-          renderAudit();
-          break;
+      byId("addOrderBtn").addEventListener("click", function () {
+        var title = (byId("orderTitle").value || "").trim();
+        var area = (byId("orderArea").value || "").trim();
+        if (!title) {
+          alert("اكتب عنوان الطلب أولاً.");
+          return;
         }
-      }
-    }
+        orders.unshift({ title: title, area: area });
+        byId("orderTitle").value = "";
+        byId("orderArea").value = "";
+        renderOrders();
+      });
 
-    function toggleUserBan(userId) {
-      if (!canBanUsers()) {
-        alert("ليس لديك صلاحية إيقاف/طرد الأعضاء.");
-        return;
-      }
-      for (var i = 0; i < state.users.length; i++) {
-        var u = state.users[i];
-        if (u.id === userId && u.role !== "owner") {
-          u.status = u.status === "banned" ? "active" : "banned";
-          addAudit(currentUser, (u.status === "banned" ? "أوقف وطرد" : "أعاد تفعيل") + " حساب (" + u.name + ")");
-          saveState();
-          populateAssignees();
-          populateDmPeers();
-          renderTeam();
-          renderAudit();
-          break;
-        }
-      }
-    }
-
-    function changeUserRole(userId, newRole) {
-      if (currentUser.role !== "owner") {
-        alert("فقط المالك الوحيد يمكنه تغيير رتبة المشرف.");
-        return;
-      }
-      for (var i = 0; i < state.users.length; i++) {
-        var u = state.users[i];
-        if (u.id === userId && u.role !== "owner") {
-          u.role = newRole;
-          if (!u.perms) u.perms = { assignOrders: true, approveUsers: false, banUsers: false, viewAudit: false };
-          addAudit(currentUser, "عدّل رتبة (" + u.name + ") إلى (" + (newRole === "mod" ? "مشرف" : "فني") + ")");
-          saveState();
-          populateAssignees();
-          populateDmPeers();
-          renderTeam();
-          renderAudit();
-          break;
-        }
-      }
-    }
-
-    function togglePerm(userId, permKey) {
-      if (currentUser.role !== "owner") {
-        alert("فقط المالك الوحيد يتحكم بصلاحيات المشرفين.");
-        return;
-      }
-      for (var i = 0; i < state.users.length; i++) {
-        var u = state.users[i];
-        if (u.id === userId && u.role !== "owner") {
-          u.perms = u.perms || {};
-          u.perms[permKey] = !u.perms[permKey];
-          addAudit(currentUser, "عدّل صلاحية (" + permKey + ") للمشرف (" + u.name + ") إلى (" + (u.perms[permKey] ? "مفعّلة" : "معطّلة") + ")");
-          saveState();
-          renderAudit();
-          break;
-        }
-      }
-    }
-
-    function renderTeam() {
-      var pendingBox = document.getElementById("pendingUsersList");
-      var activeBox = document.getElementById("activeUsersList");
-
-      var pending = state.users.filter(function(u) { return u.status === "pending"; });
-      pendingBox.innerHTML = pending.length
-        ? pending.map(function(u) {
-            return (
-              '<div class="item-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">' +
-                '<div>' +
-                  '<strong>' + escapeHtml(u.name) + '</strong>' +
-                  '<div style="font-size:12px; color:var(--text-muted);">' + maskEmail(u.email) + '</div>' +
-                '</div>' +
-                '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
-                  '<button type="button" class="btn btn-lime" style="padding:6px 12px; font-size:12px;" onclick="approveUser(\'' + u.id + '\', \'tech\')">قبول كفني</button>' +
-                  '<button type="button" class="btn btn-primary" style="padding:6px 12px; font-size:12px;" onclick="approveUser(\'' + u.id + '\', \'mod\')">قبول كمشرف</button>' +
-                  '<button type="button" class="btn btn-danger" style="padding:6px 12px; font-size:12px;" onclick="toggleUserBan(\'' + u.id + '\')">رفض / حظر</button>' +
-                '</div>' +
-              '</div>'
-            );
-          }).join("")
-        : '<p style="color:var(--text-muted); font-size:13px;">لا توجد طلبات بانتظار الموافقة حالياً.</p>';
-
-      var others = state.users.filter(function(u) { return u.status !== "pending"; });
-      activeBox.innerHTML = others.map(function(u) {
-        var isOwner = u.role === "owner";
-        var p = u.perms || {};
-        return (
-          '<div class="item-row">' +
-            '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-              '<div>' +
-                '<strong>' + escapeHtml(u.name) + '</strong> ' + roleLabel(u.role) +
-                (u.status === "banned" ? ' <span class="badge badge-banned">موقوف</span>' : '') +
-                '<div style="font-size:12px; color:var(--text-muted);">' + maskEmail(u.email) + '</div>' +
-              '</div>' +
-              (!isOwner ? (
-                '<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">' +
-                  (currentUser.role === "owner" ? (
-                    '<select style="width:auto; padding:5px 10px; font-size:12px;" onchange="changeUserRole(\'' + u.id + '\', this.value)">' +
-                      '<option value="tech"' + (u.role === "tech" ? " selected" : "") + '>فني</option>' +
-                      '<option value="mod"' + (u.role === "mod" ? " selected" : "") + '>مشرف</option>' +
-                    '</select>'
-                  ) : '') +
-                  (canBanUsers() ? (
-                    '<button type="button" class="btn btn-danger" style="padding:6px 11px; font-size:12px;" onclick="toggleUserBan(\'' + u.id + '\')">' +
-                      (u.status === "banned" ? "إلغاء الإيقاف" : "طرد / إيقاف") +
-                    '</button>'
-                  ) : '') +
-                '</div>'
-              ) : '') +
-            '</div>' +
-            (!isOwner && u.role === "mod" && currentUser.role === "owner" ? (
-              '<div class="perm-grid">' +
-                '<label class="perm-check"><input type="checkbox" ' + (p.assignOrders ? "checked" : "") + ' onchange="togglePerm(\'' + u.id + '\', \'assignOrders\')" /> توزيع وتوجيه الطلبات</label>' +
-                '<label class="perm-check"><input type="checkbox" ' + (p.approveUsers ? "checked" : "") + ' onchange="togglePerm(\'' + u.id + '\', \'approveUsers\')" /> الموافقة على الأعضاء الجدد</label>' +
-                '<label class="perm-check"><input type="checkbox" ' + (p.banUsers ? "checked" : "") + ' onchange="togglePerm(\'' + u.id + '\', \'banUsers\')" /> طرد / إيقاف الفنيين</label>' +
-                '<label class="perm-check"><input type="checkbox" ' + (p.viewAudit ? "checked" : "") + ' onchange="togglePerm(\'' + u.id + '\', \'viewAudit\')" /> الاطلاع على سجل الرقابة</label>' +
-              '</div>'
-            ) : '') +
-          '</div>'
-        );
-      }).join("");
-    }
-
-    function renderAudit() {
-      var box = document.getElementById("auditList");
-      if (!state.auditLogs.length) {
-        box.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">لا توجد حركات مسجلة بعد.</p>';
-        return;
-      }
-      box.innerHTML = state.auditLogs.map(function(a) {
-        return (
-          '<div class="item-row">' +
-            '<div style="font-size:13.5px;">' + escapeHtml(a.action) + '</div>' +
-            '<div style="font-size:11.5px; color:var(--text-muted); margin-top:4px;">' + escapeHtml(a.actor) + ' • ' + escapeHtml(a.time) + '</div>' +
-          '</div>'
-        );
-      }).join("");
-    }
-
-    function openDbModal() {
-      try {
-        document.getElementById("dbConfigInput").value = localStorage.getItem(DB_CFG_KEY) || "";
-      } catch (e) {}
-      document.getElementById("dbModal").classList.remove("hidden");
-    }
-
-    function closeDbModal() {
-      document.getElementById("dbModal").classList.add("hidden");
-    }
-
-    function saveDbConfig() {
-      var raw = (document.getElementById("dbConfigInput").value || "").trim();
-      if (!raw) {
-        alert("يرجى لصق إعدادات Firebase أولاً.");
-        return;
-      }
-      try {
-        localStorage.setItem(DB_CFG_KEY, raw);
-      } catch (e) {}
-      updateConnectionStatus(true, "تم حفظ إعدادات Firebase");
-      closeDbModal();
-      alert("تم حفظ إعدادات قاعدة البيانات بنجاح.");
-    }
-
-    function clearDbConfig() {
-      try {
-        localStorage.removeItem(DB_CFG_KEY);
-      } catch (e) {}
-      updateConnectionStatus(false, "وضع التخزين المحلي");
-      closeDbModal();
-    }
-
-    function updateConnectionStatus(hasCfg, label) {
-      var dots = ["connDot", "appConnDot"];
-      for (var i = 0; i < dots.length; i++) {
-        var el = document.getElementById(dots[i]);
-        if (el) el.className = "status-dot " + (hasCfg ? "dot-cloud" : "dot-local");
-      }
-      var cText = document.getElementById("connText");
-      if (cText) cText.textContent = label;
-      var aLabel = document.getElementById("appConnLabel");
-      if (aLabel) aLabel.textContent = hasCfg ? "Firebase مُعد" : "محلي";
-    }
-
-    function escapeHtml(str) {
-      return String(str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
-    var savedCfg = false;
-    try {
-      savedCfg = !!localStorage.getItem(DB_CFG_KEY);
-    } catch (e) {}
-    updateConnectionStatus(savedCfg, savedCfg ? "إعدادات Firebase محفوظة" : "وضع التخزين المحلي");
+      byId("logoutBtn").addEventListener("click", function () {
+        byId("appView").classList.add("hidden");
+        byId("loginView").classList.remove("hidden");
+      });
+    })();
   </script>
 </body>
 </html>
