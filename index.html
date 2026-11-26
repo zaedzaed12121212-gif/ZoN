@@ -3,273 +3,610 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZON — تسجيل الدخول</title>
+  <title>ZON — منصة إدارة الفرق والطلبات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-obsidian: #07070d;
+      --bg-card: #10101c;
+      --bg-card-2: #171728;
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --text-main: #f4f4ff;
+      --text-muted: #9898b8;
+      --violet: #7c3aed;
+      --cyan: #06b6d4;
+      --lime: #a3e635;
+      --magenta: #ec4899;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Tahoma, Arial, sans-serif;
-      -webkit-tap-highlight-color: rgba(6, 182, 212, 0.3);
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      -webkit-tap-highlight-color: rgba(6, 182, 212, 0.25);
     }
 
     body {
-      background: #090912;
-      color: #f4f4ff;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(124, 58, 237, 0.22), transparent 35%),
+        radial-gradient(circle at 88% 15%, rgba(6, 182, 212, 0.18), transparent 35%),
+        radial-gradient(circle at 50% 95%, rgba(236, 72, 153, 0.14), transparent 40%),
+        var(--bg-obsidian);
+      color: var(--text-main);
       min-height: 100vh;
-      padding: 20px;
-      display: flex;
+      line-height: 1.6;
+    }
+
+    .hidden { display: none !important; }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      touch-action: manipulation;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 6px;
     }
 
-    .box {
+    .btn:active { opacity: 0.85; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      color: #fff;
+    }
+
+    .btn-lime {
+      background: var(--lime);
+      color: #090c04;
+    }
+
+    .btn-magenta {
+      background: var(--magenta);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.18);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+    }
+
+    .btn-ghost {
+      background: var(--bg-card-2);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+
+    input, select, textarea {
       width: 100%;
-      max-width: 460px;
-      background: #131324;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 16px;
-      padding: 20px;
+      background: var(--bg-card-2);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
     }
 
-    h1 {
-      color: #a3e635;
-      text-align: center;
-      font-size: 32px;
-      margin-bottom: 6px;
-    }
-
-    .sub {
-      text-align: center;
-      color: #a5a5c8;
-      font-size: 13px;
-      margin-bottom: 18px;
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--cyan);
     }
 
     label {
       display: block;
       font-size: 13px;
-      color: #c7c7e2;
-      margin-bottom: 6px;
-      margin-top: 10px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 600;
     }
 
-    input, textarea, select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: #1c1c34;
-      color: #fff;
-      font-size: 15px;
+    .brand-logo {
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--lime);
     }
 
-    .btn {
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-owner { background: rgba(163, 230, 53, 0.18); color: var(--lime); border: 1px solid rgba(163, 230, 53, 0.4); }
+    .badge-mod { background: rgba(6, 182, 212, 0.18); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.4); }
+    .badge-tech { background: rgba(124, 58, 237, 0.2); color: #c4b5fd; border: 1px solid rgba(124, 58, 237, 0.4); }
+    .badge-pending { background: rgba(245, 158, 11, 0.18); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-banned { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+    .auth-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .auth-box {
       width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: bold;
+      max-width: 440px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 9px 15px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
       cursor: pointer;
-      margin-top: 12px;
       touch-action: manipulation;
     }
 
-    .btn-main {
-      background: #7c3aed;
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(6, 182, 212, 0.28));
       color: #fff;
+      border-color: var(--cyan);
     }
 
-    .btn-cyan {
-      background: #06b6d4;
-      color: #061014;
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
     }
 
-    .btn-lime {
-      background: #a3e635;
-      color: #0b1102;
+    .item-row {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
     }
 
-    .btn-dark {
-      background: #252542;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-    }
-
-    .row-2 {
+    .chat-box {
+      height: 320px;
+      overflow-y: auto;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
       display: flex;
-      gap: 10px;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .row-2 .btn {
-      margin-top: 10px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .msg-box {
-      margin-top: 14px;
-      padding: 12px;
-      border-radius: 10px;
-      background: #1b1b30;
-      border: 1px solid #06b6d4;
+    .msg-bubble {
+      max-width: 82%;
+      padding: 9px 13px;
+      border-radius: 12px;
       font-size: 14px;
-      line-height: 1.6;
+      background: rgba(124, 58, 237, 0.22);
+      border: 1px solid rgba(124, 58, 237, 0.35);
+      align-self: flex-start;
     }
 
-    .card-item {
-      background: #1b1b30;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 10px;
-      padding: 12px;
+    .msg-bubble.mine {
+      background: rgba(6, 182, 212, 0.22);
+      border-color: rgba(6, 182, 212, 0.4);
+      align-self: flex-end;
+    }
+
+    .msg-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .perm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 8px;
       margin-top: 10px;
     }
+
+    .perm-check {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--bg-card);
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+
+    .perm-check input { width: auto; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-left: 6px;
+    }
+
+    .dot-cloud { background: var(--lime); }
+    .dot-local { background: var(--warning); }
   </style>
 </head>
 <body>
 
-  <div id="loginView" class="box">
-    <h1>ZON</h1>
-    <div class="sub">إدارة الطلبات والفرق والصيانة</div>
+  <div id="authScreen" class="auth-wrap">
+    <div class="card auth-box">
+      <div style="text-align:center; margin-bottom:18px;">
+        <h1 class="brand-logo" style="font-size:34px;">ZON</h1>
+        <p style="color:var(--text-muted); font-size:13px;">نظام إدارة الطلبات والفرق والمذكرات</p>
+        <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">
+          <span id="connDot" class="status-dot dot-local"></span>
+          <span id="connText">وضع التخزين المحلي (جاهز للربط السحابي)</span>
+        </div>
+      </div>
 
-    <div class="row-2">
-      <button id="tabLogin" type="button" class="btn btn-main">تسجيل الدخول</button>
-      <button id="tabReg" type="button" class="btn btn-dark">حساب جديد</button>
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <button id="modeLoginBtn" type="button" class="btn btn-primary" style="flex:1;">تسجيل الدخول</button>
+        <button id="modeRegisterBtn" type="button" class="btn btn-ghost" style="flex:1;">حساب جديد</button>
+      </div>
+
+      <div id="nameFieldWrap" class="hidden" style="margin-bottom:10px;">
+        <label>الاسم الكامل</label>
+        <input id="authName" type="text" placeholder="مثال: علي حسن" />
+      </div>
+
+      <div id="roleFieldWrap" class="hidden" style="margin-bottom:10px;">
+        <label>الصفة المطلوبة (تُعتمد بعد موافقة الإدارة)</label>
+        <select id="authRequestedRole">
+          <option value="tech">فني ميداني</option>
+          <option value="mod">مشرف</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <label>البريد الإلكتروني</label>
+        <input id="authEmail" type="email" placeholder="example@mail.com" />
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label>كلمة المرور</label>
+        <input id="authPassword" type="password" placeholder="••••••••" />
+      </div>
+
+      <button id="authSubmitBtn" type="button" class="btn btn-primary" style="width:100%; margin-bottom:10px;">دخول إلى ZON</button>
+
+      <div style="display:flex; gap:8px;">
+        <button id="openDbAuthBtn" type="button" class="btn btn-ghost" style="flex:1; font-size:12.5px;">إعداد قاعدة البيانات</button>
+        <button id="quickOwnerBtn" type="button" class="btn btn-lime" style="flex:1; font-size:12.5px;">دخول تجريبي كمالك</button>
+      </div>
     </div>
-
-    <div id="regNameWrap" class="hidden">
-      <label>الاسم الكامل</label>
-      <input id="fullName" type="text" placeholder="اكتب اسمك" />
-    </div>
-
-    <label>البريد الإلكتروني</label>
-    <input id="emailInp" type="email" placeholder="example@mail.com" />
-
-    <label>كلمة المرور</label>
-    <input id="passInp" type="password" placeholder="••••••••" />
-
-    <button id="submitAuthBtn" type="button" class="btn btn-cyan">دخول إلى ZON</button>
-    <button id="demoOwnerBtn" type="button" class="btn btn-lime">دخول تجريبي كمالك</button>
-
-    <div id="statusMsg" class="msg-box hidden"></div>
   </div>
 
-  <div id="appView" class="box hidden">
-    <h1>ZON</h1>
-    <div id="userInfo" class="sub"></div>
+  <div id="gateScreen" class="auth-wrap hidden">
+    <div class="card auth-box" style="text-align:center;">
+      <h2 class="brand-logo" style="font-size:26px; margin-bottom:8px;">ZON</h2>
+      <div id="gateBadge" style="margin-bottom:12px;"></div>
+      <h3 id="gateTitle" style="margin-bottom:8px;">حسابك قيد المراجعة</h3>
+      <p id="gateDesc" style="color:var(--text-muted); font-size:14px; margin-bottom:18px;">
+        تم تسجيل بريدك الإلكتروني بنجاح. لن يتم عرض أي بيانات أو محادثات حتى يوافق مالك النظام على حسابك ويحدد صلاحياتك.
+      </p>
+      <button id="gateLogoutBtn" type="button" class="btn btn-ghost">تسجيل الخروج</button>
+    </div>
+  </div>
 
-    <label>إضافة طلب جديد</label>
-    <input id="orderTitle" type="text" placeholder="مثال: صيانة لوحة أو تمديد كهرباء" />
-    <input id="orderArea" type="text" placeholder="المنطقة / العنوان" style="margin-top:8px;" />
-    <button id="addOrderBtn" type="button" class="btn btn-lime">إضافة الطلب</button>
+  <div id="appScreen" class="container hidden">
+    <div class="topbar">
+      <div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span class="brand-logo" style="font-size:24px;">ZON</span>
+          <span id="currentUserBadge"></span>
+          <span style="font-size:12px; color:var(--text-muted);">
+            <span id="appConnDot" class="status-dot dot-local"></span>
+            <span id="appConnLabel">محلي</span>
+          </span>
+        </div>
+        <div id="currentUserSub" style="font-size:12px; color:var(--text-muted); margin-top:2px;"></div>
+      </div>
 
-    <div id="ordersContainer"></div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="dbConfigBtn" type="button" class="btn btn-ghost">قاعدة البيانات</button>
+        <button id="appLogoutBtn" type="button" class="btn btn-danger">خروج</button>
+      </div>
+    </div>
 
-    <button id="logoutBtn" type="button" class="btn btn-dark" style="margin-top:18px;">تسجيل الخروج</button>
+    <div class="tabs">
+      <button type="button" class="tab-btn active" data-tab="orders">الطلبات</button>
+      <button type="button" class="tab-btn" data-tab="chat">الدردشة (كروب وخاص)</button>
+      <button type="button" class="tab-btn" data-tab="notes">المذكرات</button>
+      <button id="teamTabBtn" type="button" class="tab-btn hidden" data-tab="team">الفريق والصلاحيات</button>
+      <button id="auditTabBtn" type="button" class="tab-btn hidden" data-tab="audit">سجل الرقابة</button>
+    </div>
+
+    <section id="tab-orders">
+      <div class="grid-2">
+        <div id="createOrderCard" class="card">
+          <h3 style="margin-bottom:12px; color:var(--cyan);">توجيه طلب جديد</h3>
+          <div style="margin-bottom:10px;">
+            <label>عنوان الطلب / نوع العمل</label>
+            <input id="orderTitle" type="text" placeholder="مثال: فحص لوحة ATS أو صيانة كهرباء" />
+          </div>
+          <div style="margin-bottom:10px;">
+            <label>المحافظة / الموقع</label>
+            <input id="orderLocation" type="text" placeholder="مثال: النجف - حي الأمير" />
+          </div>
+          <div style="margin-bottom:10px;">
+            <label>إسناد إلى فني</label>
+            <select id="orderAssignee"></select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label>تفاصيل وملاحظات الطلب</label>
+            <textarea id="orderNotes" rows="3" placeholder="اكتب التفاصيل الفنية أو المواد المطلوبة..."></textarea>
+          </div>
+          <button id="createOrderBtn" type="button" class="btn btn-primary" style="width:100%;">إرسال وتوجيه الطلب</button>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 style="color:var(--lime);">الطلبات النشطة والموزعة</h3>
+            <span id="ordersCount" class="badge badge-tech">0</span>
+          </div>
+          <div id="ordersList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-chat" class="hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="color:var(--cyan);">الكروب العام للفريق</h3>
+            <span class="badge badge-mod">مباشر</span>
+          </div>
+          <div id="groupChatBox" class="chat-box"></div>
+          <div style="display:flex; gap:8px;">
+            <input id="groupChatInput" type="text" placeholder="اكتب رسالة للكروب العام..." />
+            <button id="sendGroupBtn" type="button" class="btn btn-primary">إرسال</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="color:var(--magenta); margin-bottom:10px;">دردشة خاصة</h3>
+          <div style="margin-bottom:10px;">
+            <label>اختر الشخص للمحادثة الخاصة</label>
+            <select id="dmPeerSelect"></select>
+          </div>
+          <div id="privateChatBox" class="chat-box"></div>
+          <div style="display:flex; gap:8px;">
+            <input id="privateChatInput" type="text" placeholder="اكتب رسالة خاصة..." />
+            <button id="sendPrivateBtn" type="button" class="btn btn-magenta">إرسال</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-notes" class="hidden">
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="color:var(--lime); margin-bottom:12px;">إضافة مذكرة جديدة</h3>
+          <div style="margin-bottom:10px;">
+            <label>عنوان المذكرة</label>
+            <input id="noteTitle" type="text" placeholder="مثال: نواقص مواد أو ملاحظة متابعة" />
+          </div>
+          <div style="margin-bottom:10px;">
+            <label>نوع المذكرة</label>
+            <select id="noteScope">
+              <option value="private">مذكرتي الخاصة (لا يراها غيري)</option>
+              <option value="shared">مذكرة عمل مشتركة للفريق</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label>نص المذكرة</label>
+            <textarea id="noteBody" rows="3" placeholder="اكتب تفاصيل المذكرة هنا..."></textarea>
+          </div>
+          <button id="addNoteBtn" type="button" class="btn btn-lime" style="width:100%;">حفظ المذكرة</button>
+        </div>
+
+        <div class="card">
+          <h3 style="color:var(--cyan); margin-bottom:12px;">المذكرات المحفوظة</h3>
+          <div id="notesList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-team" class="hidden">
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="color:var(--warning); margin-bottom:10px;">طلبات بانتظار موافقتك</h3>
+        <div id="pendingUsersList"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="color:var(--lime); margin-bottom:10px;">إدارة الأعضاء وتفصيل صلاحيات المشرفين</h3>
+        <div id="activeUsersList"></div>
+      </div>
+    </section>
+
+    <section id="tab-audit" class="hidden">
+      <div class="card">
+        <h3 style="color:var(--magenta); margin-bottom:12px;">سجل الرقابة والحركات الإدارية</h3>
+        <div id="auditList"></div>
+      </div>
+    </section>
+  </div>
+
+  <div id="dbModal" class="modal-backdrop hidden">
+    <div class="card modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="color:var(--cyan);">إعدادات Firebase السحابية</h3>
+        <button id="closeDbModalBtn" type="button" class="btn btn-ghost">✕</button>
+      </div>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
+        الصق كائن firebaseConfig الخاص بمشروعك لحفظ البيانات لجميع المستخدمين عبر السحابة.
+      </p>
+      <textarea id="dbConfigInput" rows="8" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
+      <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+        <button id="saveDbBtn" type="button" class="btn btn-primary">حفظ وربط السحابة</button>
+        <button id="clearDbBtn" type="button" class="btn btn-danger">إزالة الربط (محلي)</button>
+      </div>
+    </div>
   </div>
 
   <script>
     (function () {
-      var mode = "login";
-      var orders = [
-        { title: "فحص لوحة كهرباء وتوزيع أحمال", area: "النجف" }
-      ];
+      var STORAGE_KEY = "ZON_STATE_V3";
+      var DB_CFG_KEY = "ZON_FIREBASE_CFG_V1";
+      var authMode = "login";
+      var currentUser = null;
 
       function byId(id) {
         return document.getElementById(id);
       }
 
-      function showStatus(text) {
-        var el = byId("statusMsg");
-        el.textContent = text;
-        el.classList.remove("hidden");
+      function cloneData(obj) {
+        return JSON.parse(JSON.stringify(obj));
       }
 
-      function openApp(userName, roleLabel) {
-        byId("loginView").classList.add("hidden");
-        byId("appView").classList.remove("hidden");
-        byId("userInfo").textContent = "المستخدم: " + userName + " (" + roleLabel + ")";
-        renderOrders();
+      var defaultState = {
+        ownerEmail: null,
+        users: [],
+        orders: [
+          {
+            id: "ord-1",
+            title: "فحص لوحة ATS وتبديل قاطع",
+            location: "بغداد - الكرادة",
+            assigneeId: null,
+            assigneeName: "غير معيّن بعد",
+            notes: "التأكد من توازن الأطوار وزمن التحويل.",
+            status: "جديد",
+            createdAt: new Date().toLocaleString("ar-IQ")
+          }
+        ],
+        groupMessages: [
+          {
+            id: "m-1",
+            senderId: "system",
+            senderName: "نظام ZON",
+            text: "مرحباً بكم في منصة ZON. يرجى توثيق تحديثات الطلبات أولاً بأول.",
+            time: new Date().toLocaleTimeString("ar-IQ", { hour: "2-digit", minute: "2-digit" })
+          }
+        ],
+        privateMessages: [],
+        notes: [
+          {
+            id: "n-1",
+            ownerId: "owner",
+            scope: "shared",
+            title: "تنبيه تشغيل ميداني",
+            body: "التأكد من فصل الطاقة وقياس الفولتية قبل بدء العمل على أي لوحة.",
+            createdAt: new Date().toLocaleDateString("ar-IQ")
+          }
+        ],
+        auditLogs: []
+      };
+
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return cloneData(defaultState);
+          var parsed = JSON.parse(raw);
+          return {
+            ownerEmail: parsed.ownerEmail || null,
+            users: parsed.users || [],
+            orders: parsed.orders || cloneData(defaultState.orders),
+            groupMessages: parsed.groupMessages || cloneData(defaultState.groupMessages),
+            privateMessages: parsed.privateMessages || [],
+            notes: parsed.notes || cloneData(defaultState.notes),
+            auditLogs: parsed.auditLogs || []
+          };
+        } catch (e) {
+          return cloneData(defaultState);
+        }
       }
 
-      function renderOrders() {
-        var wrap = byId("ordersContainer");
-        if (!orders.length) {
-          wrap.innerHTML = '<div class="card-item">لا توجد طلبات حالياً.</div>';
-          return;
-        }
-        var html = "";
-        for (var i = 0; i < orders.length; i++) {
-          html += '<div class="card-item"><strong>' + escapeText(orders[i].title) + '</strong><div style="color:#a5a5c8;font-size:13px;margin-top:4px;">الموقع: ' + escapeText(orders[i].area || "غير محدد") + '</div></div>';
-        }
-        wrap.innerHTML = html;
+      var state = loadState();
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
       }
 
-      function escapeText(str) {
-        return String(str || "")
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
+      function maskEmail(email) {
+        if (!email || email.indexOf("@") === -1) return "***";
+        var parts = email.split("@");
+        return parts[0].slice(0, 2) + "***@" + parts[1];
       }
 
-      byId("tabLogin").addEventListener("click", function () {
-        mode = "login";
-        byId("tabLogin").className = "btn btn-main";
-        byId("tabReg").className = "btn btn-dark";
-        byId("regNameWrap").classList.add("hidden");
-        byId("submitAuthBtn").textContent = "دخول إلى ZON";
-      });
+      function addAudit(actor, action) {
+        state.auditLogs.unshift({
+          id: "aud-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+          actor: actor ? actor.name + " (" + actor.role + ")" : "النظام",
+          action: action,
+          time: new Date().toLocaleString("ar-IQ")
+        });
+        if (state.auditLogs.length > 150) state.auditLogs.pop();
+        saveState();
+      }
 
-      byId("tabReg").addEventListener("click", function () {
-        mode = "register";
-        byId("tabReg").className = "btn btn-main";
-        byId("tabLogin").className = "btn btn-dark";
-        byId("regNameWrap").classList.remove("hidden");
-        byId("submitAuthBtn").textContent = "إنشاء حساب";
-      });
-
-      byId("submitAuthBtn").addEventListener("click", function () {
-        var email = (byId("emailInp").value || "").trim();
-        var pass = (byId("passInp").value || "").trim();
-        var name = (byId("fullName").value || "").trim();
-
-        if (!email || !pass) {
-          showStatus("يرجى إدخال البريد الإلكتروني وكلمة المرور.");
-          return;
-        }
-        if (mode === "register" && !name) {
-          showStatus("يرجى كتابة الاسم الكامل لإنشاء الحساب.");
-          return;
-        }
-        openApp(name || email, mode === "register" ? "حساب جديد" : "مستخدم");
-      });
-
-      byId("demoOwnerBtn").addEventListener("click", function () {
-        openApp("مالك النظام", "مالك");
-      });
-
-      byId("addOrderBtn").addEventListener("click", function () {
-        var title = (byId("orderTitle").value || "").trim();
-        var area = (byId("orderArea").value || "").trim();
-        if (!title) {
-          alert("اكتب عنوان الطلب أولاً.");
-          return;
-        }
-        orders.unshift({ title: title, area: area });
-        byId("orderTitle").value = "";
-        byId("orderArea").value = "";
-        renderOrders();
-      });
-
-      byId("logoutBtn").addEventListener("click", function () {
-        byId("appView").classList.add("hidden");
-        byId("loginView").classList.remove("hidden");
-      });
-    })();
-  </script>
-</body>
-</html>
+      function switchAuthMode(mode) {
+        aut
