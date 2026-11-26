@@ -3,610 +3,422 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZON — منصة إدارة الفرق والطلبات</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>ZON — إدارة الطلبات والفرق</title>
   <style>
-    :root {
-      --bg-obsidian: #07070d;
-      --bg-card: #10101c;
-      --bg-card-2: #171728;
-      --border-subtle: rgba(255, 255, 255, 0.1);
-      --text-main: #f4f4ff;
-      --text-muted: #9898b8;
-      --violet: #7c3aed;
-      --cyan: #06b6d4;
-      --lime: #a3e635;
-      --magenta: #ec4899;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-      -webkit-tap-highlight-color: rgba(6, 182, 212, 0.25);
+      font-family: Tahoma, Arial, sans-serif;
+      -webkit-tap-highlight-color: rgba(6, 182, 212, 0.3);
     }
 
     body {
-      background:
-        radial-gradient(circle at 12% 10%, rgba(124, 58, 237, 0.22), transparent 35%),
-        radial-gradient(circle at 88% 15%, rgba(6, 182, 212, 0.18), transparent 35%),
-        radial-gradient(circle at 50% 95%, rgba(236, 72, 153, 0.14), transparent 40%),
-        var(--bg-obsidian);
-      color: var(--text-main);
+      background: #080811;
+      color: #f4f4ff;
       min-height: 100vh;
-      line-height: 1.6;
-    }
-
-    .hidden { display: none !important; }
-
-    .container {
-      max-width: 1180px;
-      margin: 0 auto;
       padding: 16px;
     }
 
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      background: #131324;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
     }
 
-    .btn {
-      border: none;
-      border-radius: 10px;
-      padding: 11px 16px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      touch-action: manipulation;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    .logo {
+      color: #a3e635;
+      font-size: 30px;
+      font-weight: bold;
+      text-align: center;
     }
 
-    .btn:active { opacity: 0.85; }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--violet), var(--cyan));
-      color: #fff;
-    }
-
-    .btn-lime {
-      background: var(--lime);
-      color: #090c04;
-    }
-
-    .btn-magenta {
-      background: var(--magenta);
-      color: #fff;
-    }
-
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.18);
-      color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.45);
-    }
-
-    .btn-ghost {
-      background: var(--bg-card-2);
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-    }
-
-    input, select, textarea {
-      width: 100%;
-      background: var(--bg-card-2);
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--cyan);
+    .sub {
+      color: #a5a5c8;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 4px;
+      margin-bottom: 14px;
     }
 
     label {
       display: block;
       font-size: 13px;
-      color: var(--text-muted);
+      color: #c9c9e6;
+      margin-top: 10px;
       margin-bottom: 5px;
-      font-weight: 600;
     }
 
-    .brand-logo {
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      color: var(--lime);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .badge-owner { background: rgba(163, 230, 53, 0.18); color: var(--lime); border: 1px solid rgba(163, 230, 53, 0.4); }
-    .badge-mod { background: rgba(6, 182, 212, 0.18); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.4); }
-    .badge-tech { background: rgba(124, 58, 237, 0.2); color: #c4b5fd; border: 1px solid rgba(124, 58, 237, 0.4); }
-    .badge-pending { background: rgba(245, 158, 11, 0.18); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
-    .badge-banned { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
-
-    .auth-wrap {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-
-    .auth-box {
+    input, textarea, select {
       width: 100%;
-      max-width: 440px;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: #1b1b32;
+      color: #fff;
+      font-size: 15px;
     }
 
-    .topbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 18px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      margin-bottom: 16px;
-    }
-
-    .tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .tab-btn {
-      background: var(--bg-card);
-      color: var(--text-muted);
-      border: 1px solid var(--border-subtle);
-      padding: 9px 15px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 14px;
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
       cursor: pointer;
+      margin-top: 10px;
       touch-action: manipulation;
     }
 
-    .tab-btn.active {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(6, 182, 212, 0.28));
-      color: #fff;
-      border-color: var(--cyan);
-    }
+    .btn-violet { background: #7c3aed; color: #fff; }
+    .btn-cyan { background: #06b6d4; color: #051014; }
+    .btn-lime { background: #a3e635; color: #091002; }
+    .btn-pink { background: #ec4899; color: #fff; }
+    .btn-dark { background: #242440; color: #fff; border: 1px solid rgba(255,255,255,0.15); }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-    }
-
-    .item-row {
-      background: var(--bg-card-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 10px;
-    }
-
-    .chat-box {
-      height: 320px;
-      overflow-y: auto;
-      background: var(--bg-card-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
+    .row {
       display: flex;
-      flex-direction: column;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .msg-bubble {
-      max-width: 82%;
-      padding: 9px 13px;
-      border-radius: 12px;
-      font-size: 14px;
-      background: rgba(124, 58, 237, 0.22);
-      border: 1px solid rgba(124, 58, 237, 0.35);
-      align-self: flex-start;
+    .row .btn, .tab-btn {
+      flex: 1;
+      min-width: 90px;
     }
 
-    .msg-bubble.mine {
-      background: rgba(6, 182, 212, 0.22);
-      border-color: rgba(6, 182, 212, 0.4);
-      align-self: flex-end;
+    .tab-btn {
+      padding: 10px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: #1a1a30;
+      color: #b7b7d8;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 8px;
     }
 
-    .msg-meta {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 3px;
+    .tab-btn.active {
+      background: #7c3aed;
+      color: #fff;
+      border-color: #06b6d4;
     }
 
-    .perm-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 8px;
+    .hidden { display: none; }
+
+    .item {
+      background: #1b1b32;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 11px;
       margin-top: 10px;
     }
 
-    .perm-check {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      background: var(--bg-card);
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border-subtle);
-      font-size: 12.5px;
-      cursor: pointer;
+    .small {
+      font-size: 12px;
+      color: #a5a5c8;
+      margin-top: 4px;
     }
 
-    .perm-check input { width: auto; }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 999;
+    .notice {
+      background: #1d1b36;
+      border: 1px solid #06b6d4;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 13px;
     }
-
-    .modal-card {
-      width: 100%;
-      max-width: 560px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .status-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-left: 6px;
-    }
-
-    .dot-cloud { background: var(--lime); }
-    .dot-local { background: var(--warning); }
   </style>
 </head>
 <body>
+  <div class="wrap">
 
-  <div id="authScreen" class="auth-wrap">
-    <div class="card auth-box">
-      <div style="text-align:center; margin-bottom:18px;">
-        <h1 class="brand-logo" style="font-size:34px;">ZON</h1>
-        <p style="color:var(--text-muted); font-size:13px;">نظام إدارة الطلبات والفرق والمذكرات</p>
-        <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">
-          <span id="connDot" class="status-dot dot-local"></span>
-          <span id="connText">وضع التخزين المحلي (جاهز للربط السحابي)</span>
-        </div>
+    <!-- شاشة الدخول -->
+    <div id="loginBox" class="card">
+      <div class="logo">ZON</div>
+      <div class="sub">إدارة الطلبات والفرق والصيانة</div>
+
+      <div class="row">
+        <button id="btnModeLogin" type="button" class="btn btn-violet">دخول</button>
+        <button id="btnModeReg" type="button" class="btn btn-dark">حساب جديد</button>
       </div>
 
-      <div style="display:flex; gap:8px; margin-bottom:14px;">
-        <button id="modeLoginBtn" type="button" class="btn btn-primary" style="flex:1;">تسجيل الدخول</button>
-        <button id="modeRegisterBtn" type="button" class="btn btn-ghost" style="flex:1;">حساب جديد</button>
-      </div>
-
-      <div id="nameFieldWrap" class="hidden" style="margin-bottom:10px;">
+      <div id="regFields" class="hidden">
         <label>الاسم الكامل</label>
-        <input id="authName" type="text" placeholder="مثال: علي حسن" />
-      </div>
+        <input id="inpName" type="text" placeholder="اكتب اسمك" />
 
-      <div id="roleFieldWrap" class="hidden" style="margin-bottom:10px;">
-        <label>الصفة المطلوبة (تُعتمد بعد موافقة الإدارة)</label>
-        <select id="authRequestedRole">
-          <option value="tech">فني ميداني</option>
-          <option value="mod">مشرف</option>
+        <label>الصفة المطلوبة</label>
+        <select id="selRole">
+          <option value="فني ميداني">فني ميداني</option>
+          <option value="مشرف">مشرف</option>
         </select>
       </div>
 
-      <div style="margin-bottom:10px;">
-        <label>البريد الإلكتروني</label>
-        <input id="authEmail" type="email" placeholder="example@mail.com" />
-      </div>
+      <label>البريد الإلكتروني</label>
+      <input id="inpEmail" type="email" placeholder="example@mail.com" />
 
-      <div style="margin-bottom:14px;">
-        <label>كلمة المرور</label>
-        <input id="authPassword" type="password" placeholder="••••••••" />
-      </div>
+      <label>كلمة المرور</label>
+      <input id="inpPass" type="password" placeholder="••••••••" />
 
-      <button id="authSubmitBtn" type="button" class="btn btn-primary" style="width:100%; margin-bottom:10px;">دخول إلى ZON</button>
+      <button id="btnSubmitAuth" type="button" class="btn btn-cyan">دخول إلى ZON</button>
+      <button id="btnDemoOwner" type="button" class="btn btn-lime">دخول سريع كمالك</button>
 
-      <div style="display:flex; gap:8px;">
-        <button id="openDbAuthBtn" type="button" class="btn btn-ghost" style="flex:1; font-size:12.5px;">إعداد قاعدة البيانات</button>
-        <button id="quickOwnerBtn" type="button" class="btn btn-lime" style="flex:1; font-size:12.5px;">دخول تجريبي كمالك</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="gateScreen" class="auth-wrap hidden">
-    <div class="card auth-box" style="text-align:center;">
-      <h2 class="brand-logo" style="font-size:26px; margin-bottom:8px;">ZON</h2>
-      <div id="gateBadge" style="margin-bottom:12px;"></div>
-      <h3 id="gateTitle" style="margin-bottom:8px;">حسابك قيد المراجعة</h3>
-      <p id="gateDesc" style="color:var(--text-muted); font-size:14px; margin-bottom:18px;">
-        تم تسجيل بريدك الإلكتروني بنجاح. لن يتم عرض أي بيانات أو محادثات حتى يوافق مالك النظام على حسابك ويحدد صلاحياتك.
-      </p>
-      <button id="gateLogoutBtn" type="button" class="btn btn-ghost">تسجيل الخروج</button>
-    </div>
-  </div>
-
-  <div id="appScreen" class="container hidden">
-    <div class="topbar">
-      <div>
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <span class="brand-logo" style="font-size:24px;">ZON</span>
-          <span id="currentUserBadge"></span>
-          <span style="font-size:12px; color:var(--text-muted);">
-            <span id="appConnDot" class="status-dot dot-local"></span>
-            <span id="appConnLabel">محلي</span>
-          </span>
-        </div>
-        <div id="currentUserSub" style="font-size:12px; color:var(--text-muted); margin-top:2px;"></div>
-      </div>
-
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button id="dbConfigBtn" type="button" class="btn btn-ghost">قاعدة البيانات</button>
-        <button id="appLogoutBtn" type="button" class="btn btn-danger">خروج</button>
-      </div>
+      <div id="authNotice" class="notice hidden"></div>
     </div>
 
-    <div class="tabs">
-      <button type="button" class="tab-btn active" data-tab="orders">الطلبات</button>
-      <button type="button" class="tab-btn" data-tab="chat">الدردشة (كروب وخاص)</button>
-      <button type="button" class="tab-btn" data-tab="notes">المذكرات</button>
-      <button id="teamTabBtn" type="button" class="tab-btn hidden" data-tab="team">الفريق والصلاحيات</button>
-      <button id="auditTabBtn" type="button" class="tab-btn hidden" data-tab="audit">سجل الرقابة</button>
-    </div>
-
-    <section id="tab-orders">
-      <div class="grid-2">
-        <div id="createOrderCard" class="card">
-          <h3 style="margin-bottom:12px; color:var(--cyan);">توجيه طلب جديد</h3>
-          <div style="margin-bottom:10px;">
-            <label>عنوان الطلب / نوع العمل</label>
-            <input id="orderTitle" type="text" placeholder="مثال: فحص لوحة ATS أو صيانة كهرباء" />
-          </div>
-          <div style="margin-bottom:10px;">
-            <label>المحافظة / الموقع</label>
-            <input id="orderLocation" type="text" placeholder="مثال: النجف - حي الأمير" />
-          </div>
-          <div style="margin-bottom:10px;">
-            <label>إسناد إلى فني</label>
-            <select id="orderAssignee"></select>
-          </div>
-          <div style="margin-bottom:12px;">
-            <label>تفاصيل وملاحظات الطلب</label>
-            <textarea id="orderNotes" rows="3" placeholder="اكتب التفاصيل الفنية أو المواد المطلوبة..."></textarea>
-          </div>
-          <button id="createOrderBtn" type="button" class="btn btn-primary" style="width:100%;">إرسال وتوجيه الطلب</button>
-        </div>
-
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h3 style="color:var(--lime);">الطلبات النشطة والموزعة</h3>
-            <span id="ordersCount" class="badge badge-tech">0</span>
-          </div>
-          <div id="ordersList"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-chat" class="hidden">
-      <div class="grid-2">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 style="color:var(--cyan);">الكروب العام للفريق</h3>
-            <span class="badge badge-mod">مباشر</span>
-          </div>
-          <div id="groupChatBox" class="chat-box"></div>
-          <div style="display:flex; gap:8px;">
-            <input id="groupChatInput" type="text" placeholder="اكتب رسالة للكروب العام..." />
-            <button id="sendGroupBtn" type="button" class="btn btn-primary">إرسال</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 style="color:var(--magenta); margin-bottom:10px;">دردشة خاصة</h3>
-          <div style="margin-bottom:10px;">
-            <label>اختر الشخص للمحادثة الخاصة</label>
-            <select id="dmPeerSelect"></select>
-          </div>
-          <div id="privateChatBox" class="chat-box"></div>
-          <div style="display:flex; gap:8px;">
-            <input id="privateChatInput" type="text" placeholder="اكتب رسالة خاصة..." />
-            <button id="sendPrivateBtn" type="button" class="btn btn-magenta">إرسال</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-notes" class="hidden">
-      <div class="grid-2">
-        <div class="card">
-          <h3 style="color:var(--lime); margin-bottom:12px;">إضافة مذكرة جديدة</h3>
-          <div style="margin-bottom:10px;">
-            <label>عنوان المذكرة</label>
-            <input id="noteTitle" type="text" placeholder="مثال: نواقص مواد أو ملاحظة متابعة" />
-          </div>
-          <div style="margin-bottom:10px;">
-            <label>نوع المذكرة</label>
-            <select id="noteScope">
-              <option value="private">مذكرتي الخاصة (لا يراها غيري)</option>
-              <option value="shared">مذكرة عمل مشتركة للفريق</option>
-            </select>
-          </div>
-          <div style="margin-bottom:12px;">
-            <label>نص المذكرة</label>
-            <textarea id="noteBody" rows="3" placeholder="اكتب تفاصيل المذكرة هنا..."></textarea>
-          </div>
-          <button id="addNoteBtn" type="button" class="btn btn-lime" style="width:100%;">حفظ المذكرة</button>
-        </div>
-
-        <div class="card">
-          <h3 style="color:var(--cyan); margin-bottom:12px;">المذكرات المحفوظة</h3>
-          <div id="notesList"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-team" class="hidden">
-      <div class="card" style="margin-bottom:16px;">
-        <h3 style="color:var(--warning); margin-bottom:10px;">طلبات بانتظار موافقتك</h3>
-        <div id="pendingUsersList"></div>
-      </div>
-
+    <!-- شاشة التطبيق بعد الدخول -->
+    <div id="appBox" class="hidden">
       <div class="card">
-        <h3 style="color:var(--lime); margin-bottom:10px;">إدارة الأعضاء وتفصيل صلاحيات المشرفين</h3>
-        <div id="activeUsersList"></div>
-      </div>
-    </section>
+        <div class="logo" style="font-size:24px; text-align:right;">ZON</div>
+        <div id="userBar" class="small" style="font-size:13px; color:#e2e2ff;"></div>
 
-    <section id="tab-audit" class="hidden">
-      <div class="card">
-        <h3 style="color:var(--magenta); margin-bottom:12px;">سجل الرقابة والحركات الإدارية</h3>
-        <div id="auditList"></div>
+        <div class="row">
+          <button type="button" class="tab-btn active" data-tab="orders">الطلبات</button>
+          <button type="button" class="tab-btn" data-tab="chat">الدردشة</button>
+          <button type="button" class="tab-btn" data-tab="notes">المذكرات</button>
+          <button type="button" class="tab-btn" data-tab="settings">الإعدادات</button>
+        </div>
       </div>
-    </section>
-  </div>
 
-  <div id="dbModal" class="modal-backdrop hidden">
-    <div class="card modal-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 style="color:var(--cyan);">إعدادات Firebase السحابية</h3>
-        <button id="closeDbModalBtn" type="button" class="btn btn-ghost">✕</button>
+      <!-- تبويب الطلبات -->
+      <div id="sec-orders" class="card">
+        <h3 style="color:#06b6d4;">إضافة طلب جديد</h3>
+        <label>نوع العمل / العنوان</label>
+        <input id="ordTitle" type="text" placeholder="مثال: فحص لوحة ATS أو صيانة كهرباء" />
+
+        <label>المنطقة / الموقع</label>
+        <input id="ordArea" type="text" placeholder="مثال: النجف - حي الأمير" />
+
+        <label>الفني المسؤول</label>
+        <input id="ordTech" type="text" placeholder="مثال: علي حسن" />
+
+        <button id="btnAddOrder" type="button" class="btn btn-lime">حفظ الطلب</button>
+        <div id="ordersList"></div>
       </div>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
-        الصق كائن firebaseConfig الخاص بمشروعك لحفظ البيانات لجميع المستخدمين عبر السحابة.
-      </p>
-      <textarea id="dbConfigInput" rows="8" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
-      <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-        <button id="saveDbBtn" type="button" class="btn btn-primary">حفظ وربط السحابة</button>
-        <button id="clearDbBtn" type="button" class="btn btn-danger">إزالة الربط (محلي)</button>
+
+      <!-- تبويب الدردشة -->
+      <div id="sec-chat" class="card hidden">
+        <h3 style="color:#ec4899;">دردشة الفريق</h3>
+        <div id="chatList"></div>
+        <label>رسالة جديدة</label>
+        <input id="chatInp" type="text" placeholder="اكتب رسالتك هنا..." />
+        <button id="btnSendChat" type="button" class="btn btn-pink">إرسال الرسالة</button>
+      </div>
+
+      <!-- تبويب المذكرات -->
+      <div id="sec-notes" class="card hidden">
+        <h3 style="color:#a3e635;">المذكرات والملاحظات</h3>
+        <label>عنوان المذكرة</label>
+        <input id="noteTitle" type="text" placeholder="مثال: نواقص مواد" />
+
+        <label>التفاصيل</label>
+        <textarea id="noteBody" rows="3" placeholder="اكتب ملاحظتك هنا..."></textarea>
+
+        <button id="btnAddNote" type="button" class="btn btn-lime">إضافة مذكرة</button>
+        <div id="notesList"></div>
+      </div>
+
+      <!-- تبويب الإعدادات و Firebase -->
+      <div id="sec-settings" class="card hidden">
+        <h3 style="color:#06b6d4;">إعدادات النظام وقاعدة البيانات (Firebase)</h3>
+        <label>إعدادات Firebase Config</label>
+        <textarea id="fbConfigInp" rows="5" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
+        <button id="btnSaveFb" type="button" class="btn btn-cyan">حفظ إعدادات قاعدة البيانات</button>
+        <div id="fbStatus" class="small">الحالة: وضع تجريبي محلي</div>
+        <button id="btnLogout" type="button" class="btn btn-dark" style="margin-top:16px;">تسجيل الخروج</button>
       </div>
     </div>
+
   </div>
 
   <script>
     (function () {
-      var STORAGE_KEY = "ZON_STATE_V3";
-      var DB_CFG_KEY = "ZON_FIREBASE_CFG_V1";
-      var authMode = "login";
-      var currentUser = null;
+      var mode = "login";
+      var currentUser = { name: "مالك النظام", role: "مالك" };
+      var fbConfigText = "";
 
-      function byId(id) {
+      var orders = [
+        { title: "فحص لوحة ATS وتبديل قاطع", area: "بغداد", tech: "فريق الصيانة" }
+      ];
+
+      var chats = [
+        { sender: "النظام", text: "أهلاً بك في منصة ZON لإدارة الطلبات والفرق." }
+      ];
+
+      var notes = [
+        { title: "تنبيه سلامة", body: "فصل التيار وقياس الفولتية قبل العمل على أي لوحة." }
+      ];
+
+      function el(id) {
         return document.getElementById(id);
       }
 
-      function cloneData(obj) {
-        return JSON.parse(JSON.stringify(obj));
+      function esc(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
       }
 
-      var defaultState = {
-        ownerEmail: null,
-        users: [],
-        orders: [
-          {
-            id: "ord-1",
-            title: "فحص لوحة ATS وتبديل قاطع",
-            location: "بغداد - الكرادة",
-            assigneeId: null,
-            assigneeName: "غير معيّن بعد",
-            notes: "التأكد من توازن الأطوار وزمن التحويل.",
-            status: "جديد",
-            createdAt: new Date().toLocaleString("ar-IQ")
-          }
-        ],
-        groupMessages: [
-          {
-            id: "m-1",
-            senderId: "system",
-            senderName: "نظام ZON",
-            text: "مرحباً بكم في منصة ZON. يرجى توثيق تحديثات الطلبات أولاً بأول.",
-            time: new Date().toLocaleTimeString("ar-IQ", { hour: "2-digit", minute: "2-digit" })
-          }
-        ],
-        privateMessages: [],
-        notes: [
-          {
-            id: "n-1",
-            ownerId: "owner",
-            scope: "shared",
-            title: "تنبيه تشغيل ميداني",
-            body: "التأكد من فصل الطاقة وقياس الفولتية قبل بدء العمل على أي لوحة.",
-            createdAt: new Date().toLocaleDateString("ar-IQ")
-          }
-        ],
-        auditLogs: []
-      };
+      function showNotice(msg) {
+        var n = el("authNotice");
+        n.textContent = msg;
+        n.classList.remove("hidden");
+      }
 
-      function loadState() {
-        try {
-          var raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw) return cloneData(defaultState);
-          var parsed = JSON.parse(raw);
-          return {
-            ownerEmail: parsed.ownerEmail || null,
-            users: parsed.users || [],
-            orders: parsed.orders || cloneData(defaultState.orders),
-            groupMessages: parsed.groupMessages || cloneData(defaultState.groupMessages),
-            privateMessages: parsed.privateMessages || [],
-            notes: parsed.notes || cloneData(defaultState.notes),
-            auditLogs: parsed.auditLogs || []
-          };
-        } catch (e) {
-          return cloneData(defaultState);
+      function setMode(m) {
+        mode = m;
+        var isReg = m === "reg";
+        el("btnModeLogin").className = isReg ? "btn btn-dark" : "btn btn-violet";
+        el("btnModeReg").className = isReg ? "btn btn-violet" : "btn btn-dark";
+        el("regFields").classList.toggle("hidden", !isReg);
+        el("btnSubmitAuth").textContent = isReg ? "إنشاء حساب" : "دخول إلى ZON";
+      }
+
+      function enterApp(name, role) {
+        currentUser = { name: name || "مستخدم ZON", role: role || "مالك" };
+        el("userBar").textContent = "المستخدم: " + currentUser.name + " | الصفة: " + currentUser.role;
+        el("loginBox").classList.add("hidden");
+        el("appBox").classList.remove("hidden");
+        renderAll();
+      }
+
+      function switchTab(tabName) {
+        var btns = document.querySelectorAll(".tab-btn");
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].classList.toggle("active", btns[i].getAttribute("data-tab") === tabName);
+        }
+        var secs = ["orders", "chat", "notes", "settings"];
+        for (var j = 0; j < secs.length; j++) {
+          el("sec-" + secs[j]).classList.toggle("hidden", secs[j] !== tabName);
         }
       }
 
-      var state = loadState();
-
-      function saveState() {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        } catch (e) {}
+      function renderOrders() {
+        var html = "";
+        for (var i = 0; i < orders.length; i++) {
+          html += '<div class="item">' +
+            '<strong>' + esc(orders[i].title) + '</strong>' +
+            '<div class="small">المنطقة: ' + esc(orders[i].area || "غير محدد") + ' • الفني: ' + esc(orders[i].tech || "غير معيّن") + '</div>' +
+          '</div>';
+        }
+        el("ordersList").innerHTML = html;
       }
 
-      function maskEmail(email) {
-        if (!email || email.indexOf("@") === -1) return "***";
-        var parts = email.split("@");
-        return parts[0].slice(0, 2) + "***@" + parts[1];
+      function renderChats() {
+        var html = "";
+        for (var i = 0; i < chats.length; i++) {
+          html += '<div class="item">' +
+            '<strong>' + esc(chats[i].sender) + ':</strong> ' + esc(chats[i].text) +
+          '</div>';
+        }
+        el("chatList").innerHTML = html;
       }
 
-      function addAudit(actor, action) {
-        state.auditLogs.unshift({
-          id: "aud-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
-          actor: actor ? actor.name + " (" + actor.role + ")" : "النظام",
-          action: action,
-          time: new Date().toLocaleString("ar-IQ")
+      function renderNotes() {
+        var html = "";
+        for (var i = 0; i < notes.length; i++) {
+          html += '<div class="item">' +
+            '<strong>' + esc(notes[i].title) + '</strong>' +
+            '<div class="small" style="color:#e2e2ff;">' + esc(notes[i].body) + '</div>' +
+          '</div>';
+        }
+        el("notesList").innerHTML = html;
+      }
+
+      function renderAll() {
+        renderOrders();
+        renderChats();
+        renderNotes();
+      }
+
+      el("btnModeLogin").addEventListener("click", function () { setMode("login"); });
+      el("btnModeReg").addEventListener("click", function () { setMode("reg"); });
+
+      el("btnSubmitAuth").addEventListener("click", function () {
+        var email = (el("inpEmail").value || "").trim();
+        var pass = (el("inpPass").value || "").trim();
+        var name = (el("inpName").value || "").trim();
+        var role = el("selRole").value;
+
+        if (!email || !pass) {
+          showNotice("يرجى إدخال البريد الإلكتروني وكلمة المرور.");
+          return;
+        }
+        if (mode === "reg" && !name) {
+          showNotice("يرجى كتابة الاسم الكامل.");
+          return;
+        }
+        enterApp(name || email, mode === "reg" ? role : "مالك");
+      });
+
+      el("btnDemoOwner").addEventListener("click", function () {
+        enterApp("مالك منصة ZON", "مالك");
+      });
+
+      var tabBtns = document.querySelectorAll(".tab-btn");
+      for (var t = 0; t < tabBtns.length; t++) {
+        tabBtns[t].addEventListener("click", function () {
+          switchTab(this.getAttribute("data-tab"));
         });
-        if (state.auditLogs.length > 150) state.auditLogs.pop();
-        saveState();
       }
 
-      function switchAuthMode(mode) {
-        aut
+      el("btnAddOrder").addEventListener("click", function () {
+        var title = (el("ordTitle").value || "").trim();
+        var area = (el("ordArea").value || "").trim();
+        var tech = (el("ordTech").value || "").trim();
+        if (!title) {
+          alert("اكتب عنوان الطلب أولاً.");
+          return;
+        }
+        orders.unshift({ title: title, area: area, tech: tech });
+        el("ordTitle").value = "";
+        el("ordArea").value = "";
+        el("ordTech").value = "";
+        renderOrders();
+      });
+
+      el("btnSendChat").addEventListener("click", function () {
+        var text = (el("chatInp").value || "").trim();
+        if (!text) return;
+        chats.push({ sender: currentUser.name, text: text });
+        el("chatInp").value = "";
+        renderChats();
+      });
+
+      el("btnAddNote").addEventListener("click", function () {
+        var title = (el("noteTitle").value || "").trim();
+        var body = (el("noteBody").value || "").trim();
+        if (!title && !body) return;
+        notes.unshift({ title: title || "مذكرة", body: body });
+        el("noteTitle").value = "";
+        el("noteBody").value = "";
+        renderNotes();
+      });
+
+      el("btnSaveFb").addEventListener("click", function () {
+        fbConfigText = (el("fbConfigInp").value || "").trim();
+        el("fbStatus").textContent = fbConfigText
+          ? "الحالة: تم حفظ إعدادات Firebase جاهزة للربط"
+          : "الحالة: لم يتم إدخال إعدادات بعد";
+        alert("تم حفظ الإعدادات.");
+      });
+
+      el("btnLogout").addEventListener("click", function () {
+        el("appBox").classList.add("hidden");
+        el("loginBox").classList.remove("hidden");
+      });
+    })();
+  </script>
+</body>
+</html>
