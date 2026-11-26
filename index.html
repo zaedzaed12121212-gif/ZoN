@@ -1,424 +1,328 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZON — إدارة الطلبات والفرق</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Tahoma, Arial, sans-serif;
-      -webkit-tap-highlight-color: rgba(6, 182, 212, 0.3);
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<meta name="referrer" content="no-referrer">
+<title>منصة الصيانة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#0f172a;--mute:#64748b;--line:#e5e9f2;--brand:#4f46e5;--brand2:#7c3aed;--ok:#16a34a;--warn:#d97706;--bad:#dc2626;--r:16px;--sh:0 1px 2px rgba(15,23,42,.05),0 8px 24px rgba(15,23,42,.06)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:"Tajawal",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.6}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0}
+.mute{color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:18px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:500;transition:.15s}
+.btn:hover{border-color:#cbd5e1;background:#f8fafc}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border:0}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--bad);border-color:#fecaca}
+.btn.danger:hover{background:#fef2f2}
+.btn.ok{color:var(--ok);border-color:#bbf7d0}
+.btn.ok:hover{background:#f0fdf4}
+.btn.sm{padding:6px 12px;font-size:14px;border-radius:10px}
+.inp{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 14px;outline:none;transition:.15s}
+.inp:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+.inp.sm{padding:6px 10px;font-size:14px;width:auto;border-radius:10px}
+textarea.inp{resize:vertical;min-height:90px}
+.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.fld>span{font-size:14px;color:var(--mute);font-weight:500}
+.err{color:var(--bad);font-size:14px;min-height:22px;margin-bottom:6px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row.end{justify-content:flex-end;margin-top:14px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#eef2ff;color:var(--brand)}
+.badge.new{background:#e0f2fe;color:#0369a1}
+.badge.assigned{background:#fef3c7;color:#b45309}
+.badge.in_progress{background:#ede9fe;color:#6d28d9}
+.badge.done{background:#dcfce7;color:#15803d}
+.badge.cancelled{background:#f1f5f9;color:#64748b}
+.badge.owner{background:#fee2e2;color:#b91c1c}
+.badge.supervisor{background:#fef3c7;color:#b45309}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;display:inline-grid;place-items:center;font-weight:800;flex:none}
 
-    body {
-      background: #080811;
-      color: #f4f4ff;
-      min-height: 100vh;
-      padding: 16px;
-    }
+/* auth */
+.center{min-height:100dvh;display:grid;place-items:center;padding:20px;background:radial-gradient(900px 500px at 80% -10%,#c7d2fe,transparent),radial-gradient(700px 400px at 0% 100%,#ddd6fe,transparent),var(--bg)}
+.auth{width:100%;max-width:430px;padding:28px}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.logo .mark{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand2));display:grid;place-items:center;color:#fff}
+.logo b{font-size:20px;font-weight:800}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#f1f5f9;border-radius:12px;padding:4px;margin-bottom:18px}
+.tabs button{border:0;background:none;padding:9px;border-radius:9px;cursor:pointer;font-weight:700;color:var(--mute)}
+.tabs button.on{background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.linkbtn{background:none;border:0;color:var(--brand);cursor:pointer;padding:0;font-size:14px}
+.msgscreen{max-width:460px;text-align:center;padding:32px}
+.msgscreen h2{margin-bottom:8px}
+.msgscreen .row{justify-content:center;margin-top:18px}
 
-    .wrap {
-      max-width: 640px;
-      margin: 0 auto;
-    }
+/* shell */
+.shell{display:grid;grid-template-columns:260px 1fr;min-height:100dvh}
+.side{background:#0f172a;color:#cbd5e1;padding:20px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100dvh}
+.side .logo{padding:0 8px;margin-bottom:18px;color:#fff}
+.nav{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;background:none;border:0;color:inherit;cursor:pointer;text-align:start;width:100%;font-weight:500}
+.nav:hover{background:#1e293b}
+.nav.active{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff}
+.nav svg{width:20px;height:20px;flex:none}
+.main{padding:24px;max-width:1100px;width:100%;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.top h1{font-size:24px;font-weight:800}
+.chip{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 14px 4px 6px}
+.chip small{display:block;color:var(--mute);line-height:1.1}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:16px}
+.stat{padding:18px}
+.stat b{display:block;font-size:30px;font-weight:800;line-height:1.1}
+.stat span{color:var(--mute);font-size:14px}
+.hello{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border:0}
+.hello p{margin:4px 0 0;opacity:.9}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chips button{border:1px solid var(--line);background:#fff;padding:6px 14px;border-radius:999px;cursor:pointer;font-weight:500}
+.chips button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.list{display:grid;gap:12px}
+.item{display:grid;gap:8px}
+.item h3{font-size:17px}
+.item p{margin:0;white-space:pre-wrap;word-break:break-word}
+.meta{display:flex;gap:14px;flex-wrap:wrap;color:var(--mute);font-size:13px}
+.empty{text-align:center;color:var(--mute);padding:36px 10px}
 
-    .card {
-      background: #131324;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 14px;
-    }
+/* chat */
+.chat{display:flex;flex-direction:column;height:calc(100dvh - 150px);min-height:380px;padding:0;overflow:hidden}
+.msgs{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#f8fafc}
+.msg{position:relative;max-width:78%;background:#fff;border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:8px 12px;align-self:flex-start}
+.msg.mine{align-self:flex-end;background:#eef2ff;border-color:#c7d2fe;border-radius:14px 14px 4px 14px}
+.msg .who{display:block;font-size:12px;color:var(--brand)}
+.msg p{margin:0;white-space:pre-wrap;word-break:break-word}
+.msg small{color:var(--mute);font-size:11px}
+.msg .x{position:absolute;top:2px;inset-inline-end:6px;border:0;background:none;color:var(--mute);cursor:pointer;font-size:16px;opacity:0}
+.msg:hover .x{opacity:1}
+.composer{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:#fff}
+.split{display:grid;grid-template-columns:290px 1fr;gap:14px;align-items:start}
+.ulistwrap{padding:12px;display:grid;gap:10px;max-height:calc(100dvh - 150px);overflow:auto}
+.ulist{display:grid;gap:4px}
+.urow{display:flex;gap:10px;align-items:center;padding:8px;border-radius:12px;cursor:pointer;border:0;background:none;text-align:start;width:100%}
+.urow:hover{background:#f1f5f9}
+.urow small{color:var(--mute);display:block;line-height:1.2}
+.phead{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:#fff}
+.back{display:none}
+.pane .chat{height:calc(100dvh - 210px)}
+.hint{display:grid;place-items:center;height:300px;color:var(--mute)}
 
-    .logo {
-      color: #a3e635;
-      font-size: 30px;
-      font-weight: bold;
-      text-align: center;
-    }
+/* modal + toast */
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.5);display:grid;place-items:center;padding:16px;z-index:50}
+.modal{background:#fff;border-radius:18px;padding:22px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal h3{margin-bottom:14px}
+.chk{display:flex;gap:10px;align-items:center;padding:8px 0;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--brand)}
+.toast{position:fixed;bottom:90px;inset-inline:0;margin:auto;width:max-content;max-width:90%;background:#0f172a;color:#fff;padding:10px 18px;border-radius:999px;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
-    .sub {
-      color: #a5a5c8;
-      font-size: 13px;
-      text-align: center;
-      margin-top: 4px;
-      margin-bottom: 14px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      color: #c9c9e6;
-      margin-top: 10px;
-      margin-bottom: 5px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 11px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: #1b1b32;
-      color: #fff;
-      font-size: 15px;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-      touch-action: manipulation;
-    }
-
-    .btn-violet { background: #7c3aed; color: #fff; }
-    .btn-cyan { background: #06b6d4; color: #051014; }
-    .btn-lime { background: #a3e635; color: #091002; }
-    .btn-pink { background: #ec4899; color: #fff; }
-    .btn-dark { background: #242440; color: #fff; border: 1px solid rgba(255,255,255,0.15); }
-
-    .row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .row .btn, .tab-btn {
-      flex: 1;
-      min-width: 90px;
-    }
-
-    .tab-btn {
-      padding: 10px 8px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: #1a1a30;
-      color: #b7b7d8;
-      font-weight: bold;
-      font-size: 13px;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-
-    .tab-btn.active {
-      background: #7c3aed;
-      color: #fff;
-      border-color: #06b6d4;
-    }
-
-    .hidden { display: none; }
-
-    .item {
-      background: #1b1b32;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 10px;
-      padding: 11px;
-      margin-top: 10px;
-    }
-
-    .small {
-      font-size: 12px;
-      color: #a5a5c8;
-      margin-top: 4px;
-    }
-
-    .notice {
-      background: #1d1b36;
-      border: 1px solid #06b6d4;
-      border-radius: 10px;
-      padding: 10px;
-      margin-top: 10px;
-      font-size: 13px;
-    }
-  </style>
+@media(max-width:860px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;top:auto;bottom:0;inset-inline:0;height:auto;flex-direction:row;padding:6px;z-index:20;justify-content:space-around;gap:2px}
+  .side .logo{display:none}
+  .nav{flex-direction:column;gap:2px;font-size:11px;padding:6px 2px;justify-content:center;flex:1;text-align:center}
+  .main{padding:16px 14px 96px}
+  .top h1{font-size:20px}
+  .chat{height:calc(100dvh - 230px)}
+  .split{grid-template-columns:1fr}
+  .split .pane{display:none}
+  .split.open .pane{display:block}
+  .split.open .ulistwrap{display:none}
+  .back{display:inline-block}
+  .pane .chat{height:calc(100dvh - 290px)}
+  .msg .x{opacity:1}
+}
+</style>
 </head>
 <body>
-  <div class="wrap">
+<div id="app"></div>
 
-    <!-- شاشة الدخول -->
-    <div id="loginBox" class="card">
-      <div class="logo">ZON</div>
-      <div class="sub">إدارة الطلبات والفرق والصيانة</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, deleteField, collection, query, where, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-      <div class="row">
-        <button id="btnModeLogin" type="button" class="btn btn-violet">دخول</button>
-        <button id="btnModeReg" type="button" class="btn btn-dark">حساب جديد</button>
-      </div>
+/* ================= الإعدادات: عدّلها قبل التشغيل ================= */
+const firebaseConfig = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE_PROJECT.firebaseapp.com",
+  projectId: "PASTE_PROJECT_ID",
+  storageBucket: "PASTE_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_SENDER_ID",
+  appId: "PASTE_APP_ID"
+};
+// ايميلك انت (المسؤول). لازم يكون نفس الايميل الموجود في firestore.rules
+const OWNER_EMAIL = "your-email@example.com";
+/* ================================================================ */
 
-      <div id="regFields" class="hidden">
-        <label>الاسم الكامل</label>
-        <input id="inpName" type="text" placeholder="اكتب اسمك" />
+const OWNER = OWNER_EMAIL.trim().toLowerCase();
+const ROLE = { owner: "المسؤول", supervisor: "مشرف", tech: "فني", client: "عميل" };
+const STATUS = { new: "جديد", assigned: "مُعيَّن", in_progress: "قيد التنفيذ", done: "منجز", cancelled: "ملغي" };
+const PERMS = {
+  approveUsers: "قبول الأعضاء الجدد",
+  removeTechs: "طرد وحظر الأعضاء",
+  assign: "توزيع الطلبات على الفنيين",
+  viewAll: "رؤية كل الطلبات",
+  moderateChat: "حذف رسائل المجموعة العامة"
+};
+const ERR = {
+  "auth/invalid-credential": "الايميل أو كلمة المرور غير صحيحة",
+  "auth/invalid-email": "صيغة الايميل غير صحيحة",
+  "auth/email-already-in-use": "هذا الايميل مسجّل من قبل",
+  "auth/weak-password": "كلمة المرور ضعيفة (6 أحرف على الأقل)",
+  "auth/too-many-requests": "محاولات كثيرة، جرّب بعد قليل",
+  "auth/network-request-failed": "مشكلة في الاتصال بالانترنت",
+  "auth/missing-password": "اكتب كلمة المرور"
+};
+const errMsg = e => ERR[e && e.code] || "حدث خطأ، حاول مرة ثانية";
 
-        <label>الصفة المطلوبة</label>
-        <select id="selRole">
-          <option value="فني ميداني">فني ميداني</option>
-          <option value="مشرف">مشرف</option>
-        </select>
-      </div>
+const ICONS = {
+  home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
+  tool: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  mail: '<path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><path d="M22 6l-10 7L2 6"/>',
+  note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
+};
+const icon = n => { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("fill", "none"); s.setAttribute("stroke", "currentColor"); s.setAttribute("stroke-width", "2"); s.setAttribute("stroke-linecap", "round"); s.setAttribute("stroke-linejoin", "round"); s.innerHTML = ICONS[n]; s.style.width = "22px"; s.style.height = "22px"; return s; };
 
-      <label>البريد الإلكتروني</label>
-      <input id="inpEmail" type="email" placeholder="example@mail.com" />
+/* ---------- أدوات صغيرة (كل النصوص تدخل عبر textContent = آمنة من XSS) ---------- */
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "value" || k === "checked") e[k] = v;
+    else if (v === true) e.setAttribute(k, "");
+    else e.setAttribute(k, v);
+  }
+  for (const kid of kids.flat(Infinity)) {
+    if (kid == null || kid === false) continue;
+    e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+  return e;
+}
+const root = document.getElementById("app");
+const render = n => root.replaceChildren(n);
+const fmt = t => { const d = t && t.toDate ? t.toDate() : null; return d ? d.toLocaleString("ar-IQ", { dateStyle: "medium", timeStyle: "short" }) : ""; };
+const initial = n => ((n || "؟").trim()[0] || "؟");
+function toast(m) { const t = h("div", { class: "toast" }, m); document.body.append(t); setTimeout(() => t.remove(), 2600); }
+function modal(title, body, actions) {
+  const close = () => ov.remove();
+  const ov = h("div", { class: "ov", onclick: e => { if (e.target === ov) close(); } },
+    h("div", { class: "modal" }, h("h3", {}, title), body,
+      h("div", { class: "row end" }, actions.map(a => h("button", { class: "btn " + (a.cls || ""), onclick: () => a.fn(close) }, a.label)))));
+  document.body.append(ov);
+  return close;
+}
+async function safe(fn, okMsg) {
+  try { await fn(); if (okMsg) toast(okMsg); } catch (e) { console.error(e); toast("ما نفذت العملية (ليس لديك صلاحية أو مشكلة اتصال)"); }
+}
 
-      <label>كلمة المرور</label>
-      <input id="inpPass" type="password" placeholder="••••••••" />
+/* ---------- الحالة ---------- */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let me = null, view = "dashboard", stops = [], stopMe = null;
+const clearStops = () => { stops.forEach(f => { try { f(); } catch (e) {} }); stops = []; };
+const isOwner = () => !!me && me.role === "owner";
+const can = p => isOwner() || (!!me && me.role === "supervisor" && !!me.perms && me.perms[p] === true);
+const seeAll = () => can("viewAll") || can("assign");
+const canUsers = () => can("approveUsers") || can("removeTechs");
 
-      <button id="btnSubmitAuth" type="button" class="btn btn-cyan">دخول إلى ZON</button>
-      <button id="btnDemoOwner" type="button" class="btn btn-lime">دخول سريع كمالك</button>
+/* ---------- شاشات الدخول ---------- */
+function logo() { return h("div", { class: "logo" }, h("div", { class: "mark" }, icon("tool")), h("b", {}, "منصة الصيانة")); }
 
-      <div id="authNotice" class="notice hidden"></div>
-    </div>
+function msgScreen(title, text, withLogout) {
+  return h("div", { class: "center" }, h("div", { class: "card msgscreen" }, logo(), h("h2", {}, title), h("p", { class: "mute" }, text),
+    withLogout ? h("div", { class: "row" }, h("button", { class: "btn", onclick: () => signOut(auth) }, "تسجيل خروج")) : null));
+}
 
-    <!-- شاشة التطبيق بعد الدخول -->
-    <div id="appBox" class="hidden">
-      <div class="card">
-        <div class="logo" style="font-size:24px; text-align:right;">ZON</div>
-        <div id="userBar" class="small" style="font-size:13px; color:#e2e2ff;"></div>
-
-        <div class="row">
-          <button type="button" class="tab-btn active" data-tab="orders">الطلبات</button>
-          <button type="button" class="tab-btn" data-tab="chat">الدردشة</button>
-          <button type="button" class="tab-btn" data-tab="notes">المذكرات</button>
-          <button type="button" class="tab-btn" data-tab="settings">الإعدادات</button>
-        </div>
-      </div>
-
-      <!-- تبويب الطلبات -->
-      <div id="sec-orders" class="card">
-        <h3 style="color:#06b6d4;">إضافة طلب جديد</h3>
-        <label>نوع العمل / العنوان</label>
-        <input id="ordTitle" type="text" placeholder="مثال: فحص لوحة ATS أو صيانة كهرباء" />
-
-        <label>المنطقة / الموقع</label>
-        <input id="ordArea" type="text" placeholder="مثال: النجف - حي الأمير" />
-
-        <label>الفني المسؤول</label>
-        <input id="ordTech" type="text" placeholder="مثال: علي حسن" />
-
-        <button id="btnAddOrder" type="button" class="btn btn-lime">حفظ الطلب</button>
-        <div id="ordersList"></div>
-      </div>
-
-      <!-- تبويب الدردشة -->
-      <div id="sec-chat" class="card hidden">
-        <h3 style="color:#ec4899;">دردشة الفريق</h3>
-        <div id="chatList"></div>
-        <label>رسالة جديدة</label>
-        <input id="chatInp" type="text" placeholder="اكتب رسالتك هنا..." />
-        <button id="btnSendChat" type="button" class="btn btn-pink">إرسال الرسالة</button>
-      </div>
-
-      <!-- تبويب المذكرات -->
-      <div id="sec-notes" class="card hidden">
-        <h3 style="color:#a3e635;">المذكرات والملاحظات</h3>
-        <label>عنوان المذكرة</label>
-        <input id="noteTitle" type="text" placeholder="مثال: نواقص مواد" />
-
-        <label>التفاصيل</label>
-        <textarea id="noteBody" rows="3" placeholder="اكتب ملاحظتك هنا..."></textarea>
-
-        <button id="btnAddNote" type="button" class="btn btn-lime">إضافة مذكرة</button>
-        <div id="notesList"></div>
-      </div>
-
-      <!-- تبويب الإعدادات و Firebase -->
-      <div id="sec-settings" class="card hidden">
-        <h3 style="color:#06b6d4;">إعدادات النظام وقاعدة البيانات (Firebase)</h3>
-        <label>إعدادات Firebase Config</label>
-        <textarea id="fbConfigInp" rows="5" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
-        <button id="btnSaveFb" type="button" class="btn btn-cyan">حفظ إعدادات قاعدة البيانات</button>
-        <div id="fbStatus" class="small">الحالة: وضع تجريبي محلي</div>
-        <button id="btnLogout" type="button" class="btn btn-dark" style="margin-top:16px;">تسجيل الخروج</button>
-      </div>
-    </div>
-
-  </div>
-
-  <script>
-    (function () {
-      var mode = "login";
-      var currentUser = { name: "مالك النظام", role: "مالك" };
-      var fbConfigText = "";
-
-      var orders = [
-        { title: "فحص لوحة ATS وتبديل قاطع", area: "بغداد", tech: "فريق الصيانة" }
-      ];
-
-      var chats = [
-        { sender: "النظام", text: "أهلاً بك في منصة ZON لإدارة الطلبات والفرق." }
-      ];
-
-      var notes = [
-        { title: "تنبيه سلامة", body: "فصل التيار وقياس الفولتية قبل العمل على أي لوحة." }
-      ];
-
-      function el(id) {
-        return document.getElementById(id);
-      }
-
-      function esc(s) {
-        return String(s || "")
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-      }
-
-      function showNotice(msg) {
-        var n = el("authNotice");
-        n.textContent = msg;
-        n.classList.remove("hidden");
-      }
-
-      function setMode(m) {
-        mode = m;
-        var isReg = m === "reg";
-        el("btnModeLogin").className = isReg ? "btn btn-dark" : "btn btn-violet";
-        el("btnModeReg").className = isReg ? "btn btn-violet" : "btn btn-dark";
-        el("regFields").classList.toggle("hidden", !isReg);
-        el("btnSubmitAuth").textContent = isReg ? "إنشاء حساب" : "دخول إلى ZON";
-      }
-
-      function enterApp(name, role) {
-        currentUser = { name: name || "مستخدم ZON", role: role || "مالك" };
-        el("userBar").textContent = "المستخدم: " + currentUser.name + " | الصفة: " + currentUser.role;
-        el("loginBox").classList.add("hidden");
-        el("appBox").classList.remove("hidden");
-        renderAll();
-      }
-
-      function switchTab(tabName) {
-        var btns = document.querySelectorAll(".tab-btn");
-        for (var i = 0; i < btns.length; i++) {
-          btns[i].classList.toggle("active", btns[i].getAttribute("data-tab") === tabName);
+function authScreen(mode) {
+  const f = {};
+  const err = h("div", { class: "err" });
+  const btn = h("button", { class: "btn primary", style: "width:100%", type: "submit" }, mode === "login" ? "دخول" : "إنشاء حساب");
+  const field = (k, label, type, extra) => h("label", { class: "fld" }, h("span", {}, label), f[k] = h("input", Object.assign({ class: "inp", type, required: true }, extra || {})));
+  const form = h("form", {
+    onsubmit: async e => {
+      e.preventDefault(); err.textContent = ""; btn.disabled = true;
+      try {
+        const email = f.email.value.trim();
+        if (mode === "login") await signInWithEmailAndPassword(auth, email, f.password.value);
+        else {
+          localStorage.setItem("signupRole", f.role.value);
+          const c = await createUserWithEmailAndPassword(auth, email, f.password.value);
+          await updateProfile(c.user, { displayName: f.name.value.trim() });
+          await sendEmailVerification(c.user);
         }
-        var secs = ["orders", "chat", "notes", "settings"];
-        for (var j = 0; j < secs.length; j++) {
-          el("sec-" + secs[j]).classList.toggle("hidden", secs[j] !== tabName);
+      } catch (x) { err.textContent = errMsg(x); btn.disabled = false; }
+    }
+  },
+    mode === "register" ? field("name", "الاسم الكامل", "text", { maxlength: 50, autocomplete: "name" }) : null,
+    field("email", "الايميل", "email", { autocomplete: "email", dir: "ltr" }),
+    field("password", "كلمة المرور", "password", { minlength: 6, autocomplete: mode === "login" ? "current-password" : "new-password", dir: "ltr" }),
+    mode === "register" ? h("label", { class: "fld" }, h("span", {}, "نوع الحساب"),
+      f.role = h("select", { class: "inp" }, h("option", { value: "client" }, "عميل"), h("option", { value: "tech" }, "فني"))) : null,
+    err, btn,
+    mode === "login" ? h("div", { class: "row", style: "justify-content:center;margin-top:12px" },
+      h("button", {
+        type: "button", class: "linkbtn", onclick: async () => {
+          const em = f.email.value.trim();
+          if (!em) { err.textContent = "اكتب ايميلك أولا"; return; }
+          try { await sendPasswordResetEmail(auth, em); toast("أرسلنا رابط تغيير كلمة المرور إلى ايميلك"); } catch (x) { err.textContent = errMsg(x); }
         }
-      }
+      }, "نسيت كلمة المرور؟")) : null);
+  const tab = (m, l) => h("button", { type: "button", class: mode === m ? "on" : "", onclick: () => render(authScreen(m)) }, l);
+  return h("div", { class: "center" }, h("div", { class: "card auth" }, logo(), h("div", { class: "tabs" }, tab("login", "تسجيل الدخول"), tab("register", "حساب جديد")), form));
+}
 
-      function renderOrders() {
-        var html = "";
-        for (var i = 0; i < orders.length; i++) {
-          html += '<div class="item">' +
-            '<strong>' + esc(orders[i].title) + '</strong>' +
-            '<div class="small">المنطقة: ' + esc(orders[i].area || "غير محدد") + ' • الفني: ' + esc(orders[i].tech || "غير معيّن") + '</div>' +
-          '</div>';
-        }
-        el("ordersList").innerHTML = html;
-      }
+function verifyScreen(u) {
+  return h("div", { class: "center" }, h("div", { class: "card msgscreen" }, logo(), h("h2", {}, "فعّل ايميلك"),
+    h("p", { class: "mute" }, "أرسلنا رابط التفعيل إلى " + u.email + ". افتح الرابط ثم ارجع واضغط الزر."),
+    h("div", { class: "row" },
+      h("button", { class: "btn primary", onclick: async () => { await u.reload(); await u.getIdToken(true); route(auth.currentUser); } }, "فعّلته، دخّلني"),
+      h("button", { class: "btn", onclick: () => safe(() => sendEmailVerification(u), "تم إرسال الرابط") }, "إعادة إرسال الرابط"),
+      h("button", { class: "btn", onclick: () => signOut(auth) }, "خروج"))));
+}
 
-      function renderChats() {
-        var html = "";
-        for (var i = 0; i < chats.length; i++) {
-          html += '<div class="item">' +
-            '<strong>' + esc(chats[i].sender) + ':</strong> ' + esc(chats[i].text) +
-          '</div>';
-        }
-        el("chatList").innerHTML = html;
-      }
+/* ---------- التوجيه بعد تسجيل الدخول ---------- */
+async function route(u) {
+  if (stopMe) { stopMe(); stopMe = null; }
+  clearStops(); me = null;
+  if (!u) return render(authScreen("login"));
+  if (!u.emailVerified) return render(verifyScreen(u));
+  const ref = doc(db, "users", u.uid);
+  try {
+    const s = await getDoc(ref);
+    if (!s.exists()) {
+      const email = (u.email || "").toLowerCase();
+      const owner = email === OWNER;
+      const role = owner ? "owner" : (localStorage.getItem("signupRole") === "tech" ? "tech" : "client");
+      await setDoc(ref, { email, name: u.displayName || email.split("@")[0], role, status: owner ? "approved" : "pending", createdAt: serverTimestamp() });
+    }
+  } catch (e) {
+    console.error(e);
+    return render(msgScreen("تعذر الاتصال", "تأكد من الانترنت ومن أنك نشرت قواعد Firestore (ملف firestore.rules).", true));
+  }
+  let sig = "";
+  stopMe = onSnapshot(ref, s => {
+    if (!s.exists()) return;
+    me = Object.assign({ uid: u.uid }, s.data());
+    const nsig = JSON.stringify([me.status, me.role, me.perms || null]);
+    if (nsig !== sig) { sig = nsig; shell(); }
+  }, () => render(msgScreen("تعذر الاتصال", "لا يمكن قراءة بيانات حسابك الآن.", true)));
+}
 
-      function renderNotes() {
-        var html = "";
-        for (var i = 0; i < notes.length; i++) {
-          html += '<div class="item">' +
-            '<strong>' + esc(notes[i].title) + '</strong>' +
-            '<div class="small" style="color:#e2e2ff;">' + esc(notes[i].body) + '</div>' +
-          '</div>';
-        }
-        el("notesList").innerHTML = html;
-      }
-
-      function renderAll() {
-        renderOrders();
-        renderChats();
-        renderNotes();
-      }
-
-      el("btnModeLogin").addEventListener("click", function () { setMode("login"); });
-      el("btnModeReg").addEventListener("click", function () { setMode("reg"); });
-
-      el("btnSubmitAuth").addEventListener("click", function () {
-        var email = (el("inpEmail").value || "").trim();
-        var pass = (el("inpPass").value || "").trim();
-        var name = (el("inpName").value || "").trim();
-        var role = el("selRole").value;
-
-        if (!email || !pass) {
-          showNotice("يرجى إدخال البريد الإلكتروني وكلمة المرور.");
-          return;
-        }
-        if (mode === "reg" && !name) {
-          showNotice("يرجى كتابة الاسم الكامل.");
-          return;
-        }
-        enterApp(name || email, mode === "reg" ? role : "مالك");
-      });
-
-      el("btnDemoOwner").addEventListener("click", function () {
-        enterApp("مالك منصة ZON", "مالك");
-      });
-
-      var tabBtns = document.querySelectorAll(".tab-btn");
-      for (var t = 0; t < tabBtns.length; t++) {
-        tabBtns[t].addEventListener("click", function () {
-          switchTab(this.getAttribute("data-tab"));
-        });
-      }
-
-      el("btnAddOrder").addEventListener("click", function () {
-        var title = (el("ordTitle").value || "").trim();
-        var area = (el("ordArea").value || "").trim();
-        var tech = (el("ordTech").value || "").trim();
-        if (!title) {
-          alert("اكتب عنوان الطلب أولاً.");
-          return;
-        }
-        orders.unshift({ title: title, area: area, tech: tech });
-        el("ordTitle").value = "";
-        el("ordArea").value = "";
-        el("ordTech").value = "";
-        renderOrders();
-      });
-
-      el("btnSendChat").addEventListener("click", function () {
-        var text = (el("chatInp").value || "").trim();
-        if (!text) return;
-        chats.push({ sender: currentUser.name, text: text });
-        el("chatInp").value = "";
-        renderChats();
-      });
-
-      el("btnAddNote").addEventListener("click", function () {
-        var title = (el("noteTitle").value || "").trim();
-        var body = (el("noteBody").value || "").trim();
-        if (!title && !body) return;
-        notes.unshift({ title: title || "مذكرة", body: body });
-        el("noteTitle").value = "";
-        el("noteBody").value = "";
-        renderNotes();
-      });
-
-      el("btnSaveFb").addEventListener("click", function () {
-        fbConfigText = (el("fbConfigInp").value || "").trim();
-        el("fbStatus").textContent = fbConfigText
-          ? "الحالة: تم حفظ إعدادات Firebase جاهزة للربط"
-          : "الحالة: لم يتم إدخال إعدادات بعد";
-        alert("تم حفظ الإعدادات.");
-      });
-
-      el("btnLogout").addEventListener("click", function () {
-        el("appBox").classList.add("hidden");
-        el("loginBox").classList.remove("hidden");
-      });
-    })();
-  </script>
-</body>
-</html>
+/* ---------- الهيكل العام ---------- */
+function shell() {
+  clearStops();
+  if (me.status === "pending") return render(msgScreen("حسابك بانتظار الموافقة", "تم تسجيلك بنجاح. بعد أن يوافق المسؤول على حسابك ستدخل تلقائيا بدون أي خطوة إضافية.", true));
+  if (me.status === "blocked") return render(msgScreen("الحساب موقوف", "تواصل مع المسؤول لمعرفة السبب.", true));
+  const items = [["dashboard", "الرئيسية", "home"], ["requests", "الطلبات", "tool"], ["group", "المجموعة", "users"], ["private", "الخاص", "mail"], ["notes", "المذكرات", "note"]];
+  if (isOwner() || canUsers()) items.push(["users", "الأعضاء", "shield"]);
+  if (!items.some(i => i[0] === 
