@@ -4,15 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ZON — منصة إدارة الفرق والطلبات</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-obsidian: #07070d;
       --bg-card: #10101c;
       --bg-card-2: #171728;
-      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-subtle: rgba(255, 255, 255, 0.1);
       --text-main: #f4f4ff;
       --text-muted: #9898b8;
       --violet: #7c3aed;
@@ -28,6 +26,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Cairo', sans-serif;
+      -webkit-tap-highlight-color: rgba(6, 182, 212, 0.25);
     }
 
     body {
@@ -60,24 +59,22 @@
     .btn {
       border: none;
       border-radius: 10px;
-      padding: 10px 16px;
+      padding: 11px 16px;
       font-weight: 700;
       font-size: 14px;
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+      touch-action: manipulation;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
     }
 
-    .btn:active { transform: scale(0.97); }
-    .btn:hover { opacity: 0.94; }
+    .btn:active { opacity: 0.85; }
 
     .btn-primary {
       background: linear-gradient(135deg, var(--violet), var(--cyan));
       color: #fff;
-      box-shadow: 0 4px 18px rgba(6, 182, 212, 0.28);
     }
 
     .btn-lime {
@@ -91,9 +88,9 @@
     }
 
     .btn-danger {
-      background: rgba(239, 68, 68, 0.16);
+      background: rgba(239, 68, 68, 0.18);
       color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.4);
+      border: 1px solid rgba(239, 68, 68, 0.45);
     }
 
     .btn-ghost {
@@ -115,7 +112,6 @@
 
     input:focus, select:focus, textarea:focus {
       border-color: var(--cyan);
-      box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
     }
 
     label {
@@ -129,9 +125,7 @@
     .brand-logo {
       font-weight: 800;
       letter-spacing: 1.5px;
-      background: linear-gradient(90deg, var(--cyan), var(--lime), var(--magenta));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--lime);
     }
 
     .badge {
@@ -148,7 +142,6 @@
     .badge-pending { background: rgba(245, 158, 11, 0.18); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
     .badge-banned { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
 
-    /* Auth Gate */
     .auth-wrap {
       min-height: 100vh;
       display: flex;
@@ -162,7 +155,6 @@
       max-width: 440px;
     }
 
-    /* Topbar */
     .topbar {
       display: flex;
       flex-wrap: wrap;
@@ -215,7 +207,7 @@
     }
 
     .chat-box {
-      height: 340px;
+      height: 320px;
       overflow-y: auto;
       background: var(--bg-card-2);
       border: 1px solid var(--border-subtle);
@@ -270,7 +262,6 @@
 
     .perm-check input { width: auto; }
 
-    /* Modal */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -297,13 +288,12 @@
       margin-left: 6px;
     }
 
-    .dot-cloud { background: var(--lime); box-shadow: 0 0 8px var(--lime); }
+    .dot-cloud { background: var(--lime); }
     .dot-local { background: var(--warning); }
   </style>
 </head>
 <body>
 
-  <!-- بوابة الدخول -->
   <div id="authScreen" class="auth-wrap">
     <div class="card auth-box">
       <div style="text-align:center; margin-bottom:18px;">
@@ -316,8 +306,8 @@
       </div>
 
       <div style="display:flex; gap:8px; margin-bottom:14px;">
-        <button id="modeLoginBtn" class="btn btn-primary" style="flex:1;" onclick="switchAuthMode('login')">تسجيل الدخول</button>
-        <button id="modeRegisterBtn" class="btn btn-ghost" style="flex:1;" onclick="switchAuthMode('register')">حساب جديد</button>
+        <button id="modeLoginBtn" type="button" class="btn btn-primary" style="flex:1;" onclick="switchAuthMode('login')">تسجيل الدخول</button>
+        <button id="modeRegisterBtn" type="button" class="btn btn-ghost" style="flex:1;" onclick="switchAuthMode('register')">حساب جديد</button>
       </div>
 
       <div id="nameFieldWrap" class="hidden" style="margin-bottom:10px;">
@@ -343,16 +333,15 @@
         <input id="authPassword" type="password" placeholder="••••••••" />
       </div>
 
-      <button id="authSubmitBtn" class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="submitAuth()">دخول إلى ZON</button>
+      <button id="authSubmitBtn" type="button" class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="submitAuth()">دخول إلى ZON</button>
 
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-ghost" style="flex:1; font-size:12.5px;" onclick="openDbModal()">إعداد قاعدة البيانات</button>
-        <button class="btn btn-lime" style="flex:1; font-size:12.5px;" onclick="quickOwnerDemo()">دخول تجريبي كمالك</button>
+        <button type="button" class="btn btn-ghost" style="flex:1; font-size:12.5px;" onclick="openDbModal()">إعداد قاعدة البيانات</button>
+        <button type="button" class="btn btn-lime" style="flex:1; font-size:12.5px;" onclick="quickOwnerDemo()">دخول تجريبي كمالك</button>
       </div>
     </div>
   </div>
 
-  <!-- شاشة الانتظار أو الحظر -->
   <div id="gateScreen" class="auth-wrap hidden">
     <div class="card auth-box" style="text-align:center;">
       <h2 class="brand-logo" style="font-size:26px; margin-bottom:8px;">ZON</h2>
@@ -361,11 +350,10 @@
       <p id="gateDesc" style="color:var(--text-muted); font-size:14px; margin-bottom:18px;">
         تم تسجيل بريدك الإلكتروني بنجاح. لن يتم عرض أي بيانات أو محادثات حتى يوافق مالك النظام على حسابك ويحدد صلاحياتك.
       </p>
-      <button class="btn btn-ghost" onclick="logout()">تسجيل الخروج</button>
+      <button type="button" class="btn btn-ghost" onclick="logout()">تسجيل الخروج</button>
     </div>
   </div>
 
-  <!-- التطبيق الرئيسي -->
   <div id="appScreen" class="container hidden">
     <div class="topbar">
       <div>
@@ -381,20 +369,19 @@
       </div>
 
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button id="dbConfigBtn" class="btn btn-ghost" onclick="openDbModal()">قاعدة البيانات</button>
-        <button class="btn btn-danger" onclick="logout()">خروج</button>
+        <button id="dbConfigBtn" type="button" class="btn btn-ghost" onclick="openDbModal()">قاعدة البيانات</button>
+        <button type="button" class="btn btn-danger" onclick="logout()">خروج</button>
       </div>
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="orders" onclick="switchTab('orders')">الطلبات</button>
-      <button class="tab-btn" data-tab="chat" onclick="switchTab('chat')">الدردشة (كروب وخاص)</button>
-      <button class="tab-btn" data-tab="notes" onclick="switchTab('notes')">المذكرات</button>
-      <button id="teamTabBtn" class="tab-btn hidden" data-tab="team" onclick="switchTab('team')">الفريق والصلاحيات</button>
-      <button id="auditTabBtn" class="tab-btn hidden" data-tab="audit" onclick="switchTab('audit')">سجل الرقابة</button>
+      <button type="button" class="tab-btn active" data-tab="orders" onclick="switchTab('orders')">الطلبات</button>
+      <button type="button" class="tab-btn" data-tab="chat" onclick="switchTab('chat')">الدردشة (كروب وخاص)</button>
+      <button type="button" class="tab-btn" data-tab="notes" onclick="switchTab('notes')">المذكرات</button>
+      <button id="teamTabBtn" type="button" class="tab-btn hidden" data-tab="team" onclick="switchTab('team')">الفريق والصلاحيات</button>
+      <button id="auditTabBtn" type="button" class="tab-btn hidden" data-tab="audit" onclick="switchTab('audit')">سجل الرقابة</button>
     </div>
 
-    <!-- قسم الطلبات -->
     <section id="tab-orders">
       <div class="grid-2">
         <div id="createOrderCard" class="card">
@@ -415,7 +402,7 @@
             <label>تفاصيل وملاحظات الطلب</label>
             <textarea id="orderNotes" rows="3" placeholder="اكتب التفاصيل الفنية أو المواد المطلوبة..."></textarea>
           </div>
-          <button class="btn btn-primary" style="width:100%;" onclick="createOrder()">إرسال وتوجيه الطلب</button>
+          <button type="button" class="btn btn-primary" style="width:100%;" onclick="createOrder()">إرسال وتوجيه الطلب</button>
         </div>
 
         <div class="card">
@@ -428,7 +415,6 @@
       </div>
     </section>
 
-    <!-- قسم الدردشة -->
     <section id="tab-chat" class="hidden">
       <div class="grid-2">
         <div class="card">
@@ -438,8 +424,8 @@
           </div>
           <div id="groupChatBox" class="chat-box"></div>
           <div style="display:flex; gap:8px;">
-            <input id="groupChatInput" type="text" placeholder="اكتب رسالة للكروب العام..." onkeydown="if(event.key==='Enter') sendGroupMsg()" />
-            <button class="btn btn-primary" onclick="sendGroupMsg()">إرسال</button>
+            <input id="groupChatInput" type="text" placeholder="اكتب رسالة للكروب العام..." />
+            <button type="button" class="btn btn-primary" onclick="sendGroupMsg()">إرسال</button>
           </div>
         </div>
 
@@ -451,14 +437,13 @@
           </div>
           <div id="privateChatBox" class="chat-box"></div>
           <div style="display:flex; gap:8px;">
-            <input id="privateChatInput" type="text" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter') sendPrivateMsg()" />
-            <button class="btn btn-magenta" onclick="sendPrivateMsg()">إرسال</button>
+            <input id="privateChatInput" type="text" placeholder="اكتب رسالة خاصة..." />
+            <button type="button" class="btn btn-magenta" onclick="sendPrivateMsg()">إرسال</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- قسم المذكرات -->
     <section id="tab-notes" class="hidden">
       <div class="grid-2">
         <div class="card">
@@ -478,7 +463,7 @@
             <label>نص المذكرة</label>
             <textarea id="noteBody" rows="3" placeholder="اكتب تفاصيل المذكرة هنا..."></textarea>
           </div>
-          <button class="btn btn-lime" style="width:100%;" onclick="addNote()">حفظ المذكرة</button>
+          <button type="button" class="btn btn-lime" style="width:100%;" onclick="addNote()">حفظ المذكرة</button>
         </div>
 
         <div class="card">
@@ -488,7 +473,6 @@
       </div>
     </section>
 
-    <!-- قسم الفريق والصلاحيات -->
     <section id="tab-team" class="hidden">
       <div class="card" style="margin-bottom:16px;">
         <h3 style="color:var(--warning); margin-bottom:10px;">طلبات بانتظار موافقتك</h3>
@@ -501,7 +485,6 @@
       </div>
     </section>
 
-    <!-- قسم سجل الرقابة -->
     <section id="tab-audit" class="hidden">
       <div class="card">
         <h3 style="color:var(--magenta); margin-bottom:12px;">سجل الرقابة والحركات الإدارية</h3>
@@ -510,32 +493,34 @@
     </section>
   </div>
 
-  <!-- نافذة إعداد قاعدة البيانات -->
   <div id="dbModal" class="modal-backdrop hidden">
     <div class="card modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <h3 style="color:var(--cyan);">إعدادات Firebase السحابية</h3>
-        <button class="btn btn-ghost" onclick="closeDbModal()">✕</button>
+        <button type="button" class="btn btn-ghost" onclick="closeDbModal()">✕</button>
       </div>
       <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
-        الصق كائن <code>firebaseConfig</code> الخاص بمشروعك لحفظ البيانات لجميع المستخدمين عبر السحابة.
+        الصق كائن firebaseConfig الخاص بمشروعك لحفظ البيانات لجميع المستخدمين عبر السحابة.
       </p>
-      <textarea id="dbConfigInput" rows="8" placeholder='{\n  "apiKey": "...",\n  "authDomain": "...",\n  "projectId": "...",\n  "storageBucket": "...",\n  "messagingSenderId": "...",\n  "appId": "..."\n}'></textarea>
+      <textarea id="dbConfigInput" rows="8" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
       <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="saveDbConfig()">حفظ وربط السحابة</button>
-        <button class="btn btn-danger" onclick="clearDbConfig()">إزالة الربط (محلي)</button>
+        <button type="button" class="btn btn-primary" onclick="saveDbConfig()">حفظ وربط السحابة</button>
+        <button type="button" class="btn btn-danger" onclick="clearDbConfig()">إزالة الربط (محلي)</button>
       </div>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = "ZON_STATE_V1";
-    const DB_CFG_KEY = "ZON_FIREBASE_CFG_V1";
+    var STORAGE_KEY = "ZON_STATE_V2";
+    var DB_CFG_KEY = "ZON_FIREBASE_CFG_V1";
+    var authMode = "login";
+    var currentUser = null;
 
-    let authMode = "login";
-    let currentUser = null;
+    function cloneData(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
 
-    const defaultState = {
+    var defaultState = {
       ownerEmail: null,
       users: [],
       orders: [
@@ -547,7 +532,7 @@
           assigneeName: "غير معيّن بعد",
           notes: "التأكد من توازن الأطوار وزمن التحويل.",
           status: "جديد",
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toLocaleString("ar-IQ")
         }
       ],
       groupMessages: [
@@ -573,30 +558,48 @@
       auditLogs: []
     };
 
-    let state = loadState();
-
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return structuredClone(defaultState);
-        return { ...structuredClone(defaultState), ...JSON.parse(raw) };
-      } catch {
-        return structuredClone(defaultState);
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return cloneData(defaultState);
+        var parsed = JSON.parse(raw);
+        return {
+          ownerEmail: parsed.ownerEmail || null,
+          users: parsed.users || [],
+          orders: parsed.orders || cloneData(defaultState.orders),
+          groupMessages: parsed.groupMessages || cloneData(defaultState.groupMessages),
+          privateMessages: parsed.privateMessages || [],
+          notes: parsed.notes || cloneData(defaultState.notes),
+          auditLogs: parsed.auditLogs || []
+        };
+      } catch (e) {
+        return cloneData(defaultState);
       }
     }
 
+    var state = loadState();
+
     function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
     }
 
     function maskEmail(email) {
-      if (!email || !email.includes("@")) return "***";
-      const [user, domain] = email.split("@");
-      return user.slice(0, 2) + "***@" + domain;
+      if (!email || email.indexOf("@") === -1) return "***";
+      var parts = email.split("@");
+      return parts[0].slice(0, 2) + "***@" + parts[1];
     }
 
     function addAudit(actor, action) {
       state.auditLogs.unshift({
         id: "aud-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
-        actor: actor ? `${actor.name} (${actor.role})` : "النظام",
-        
+        actor: actor ? actor.name + " (" + actor.role + ")" : "النظام",
+        action: action,
+        time: new Date().toLocaleString("ar-IQ")
+      });
+      if (state.auditLogs.length > 150) state.auditLogs.pop();
+      saveState();
+    }
+
+    funct
