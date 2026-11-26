@@ -602,4 +602,676 @@
       saveState();
     }
 
-    funct
+    function switchAuthMode(mode) {
+      authMode = mode;
+      var isReg = mode === "register";
+      document.getElementById("modeLoginBtn").className = isReg ? "btn btn-ghost" : "btn btn-primary";
+      document.getElementById("modeRegisterBtn").className = isReg ? "btn btn-primary" : "btn btn-ghost";
+      document.getElementById("nameFieldWrap").classList.toggle("hidden", !isReg);
+      document.getElementById("roleFieldWrap").classList.toggle("hidden", !isReg);
+      document.getElementById("authSubmitBtn").textContent = isReg ? "إنشاء حساب" : "دخول إلى ZON";
+    }
+
+    function quickOwnerDemo() {
+      var owner = null;
+      for (var i = 0; i < state.users.length; i++) {
+        if (state.users[i].role === "owner") {
+          owner = state.users[i];
+          break;
+        }
+      }
+      if (!owner) {
+        owner = {
+          id: "u-owner",
+          name: "المدير العام (ZON)",
+          email: state.ownerEmail || "owner@zon.local",
+          role: "owner",
+          status: "active",
+          perms: { assignOrders: true, approveUsers: true, banUsers: true, viewAudit: true }
+        };
+        state.ownerEmail = owner.email;
+        state.users.unshift(owner);
+        addAudit(owner, "تم تفعيل حساب المالك الوحيد لمنصة ZON");
+        saveState();
+      }
+      currentUser = owner;
+      enterApp();
+    }
+
+    function submitAuth() {
+      var email = (document.getElementById("authEmail").value || "").trim().toLowerCase();
+      var pass = (document.getElementById("authPassword").value || "").trim();
+      var name = (document.getElementById("authName").value || "").trim();
+      var requestedRole = document.getElementById("authRequestedRole").value;
+
+      if (!email || !pass) {
+        alert("يرجى إدخال البريد الإلكتروني وكلمة المرور.");
+        return;
+      }
+
+      if (authMode === "register") {
+        if (!name) {
+          alert("يرجى إدخال الاسم الكامل.");
+          return;
+        }
+        var exists = state.users.some(function(u) { return u.email === email; });
+        if (exists) {
+          alert("هذا البريد الإلكتروني مسجل مسبقاً.");
+          return;
+        }
+
+        var isFirstOwner = !state.ownerEmail && state.users.length === 0;
+        var newUser = {
+          id: "u-" + Date.now(),
+          name: name,
+          email: email,
+          pass: pass,
+          role: isFirstOwner ? "owner" : requestedRole,
+          status: isFirstOwner ? "active" : "pending",
+          perms: {
+            assignOrders: isFirstOwner,
+            approveUsers: isFirstOwner,
+            banUsers: isFirstOwner,
+            viewAudit: isFirstOwner
+          }
+        };
+
+        if (isFirstOwner) {
+          state.ownerEmail = email;
+          addAudit(newUser, "تم تثبيت المالك الوحيد للنظام عبر البريد الإلكتروني");
+        } else {
+          addAudit(newUser, "طلب انضمام جديد بصفة (" + (requestedRole === "mod" ? "مشرف" : "فني") + ") بانتظار الموافقة");
+        }
+
+        state.users.push(newUser);
+        saveState();
+        currentUser = newUser;
+        routeUser();
+        return;
+      }
+
+      var found = null;
+      for (var j = 0; j < state.users.length; j++) {
+        if (state.users[j].email === email) {
+          found = state.users[j];
+          break;
+        }
+      }
+
+      if (!found) {
+        if (!state.ownerEmail && state.users.length === 0) {
+          var owner = {
+            id: "u-owner-" + Date.now(),
+            name: "مالك منصة ZON",
+            email: email,
+            pass: pass,
+            role: "owner",
+            status: "active",
+            perms: { assignOrders: true, approveUsers: true, banUsers: true, viewAudit: true }
+          };
+          state.ownerEmail = email;
+          state.users.push(owner);
+          addAudit(owner, "تم تسجيل ملكية النظام لأول مرة");
+          saveState();
+          currentUser = owner;
+          routeUser();
+          return;
+        }
+        alert("الحساب غير موجود. يمكنك إنشاء حساب جديد وانتظار موافقة الإدارة.");
+        return;
+      }
+
+      if (found.pass && found.pass !== pass) {
+        alert("كلمة المرور غير صحيحة.");
+        return;
+      }
+
+      currentUser = found;
+      routeUser();
+    }
+
+    function routeUser() {
+      document.getElementById("authScreen").classList.add("hidden");
+      if (currentUser.status === "pending") {
+        document.getElementById("gateScreen").classList.remove("hidden");
+        document.getElementById("gateBadge").innerHTML = '<span class="badge badge-pending">بانتظار الموافقة</span>';
+        document.getElementById("gateTitle").textContent = "حسابك قيد انتظار موافقة الإدارة";
+        document.getElementById("gateDesc").textContent =
+          "تم استلام طلب تسجيلك. لا يُسمح بالدخول إلى لوحة ZON أو الدردشات أو الطلبات إلا بعد موافقة المالك وتحديد صلاحياتك.";
+        return;
+      }
+      if (currentUser.status === "banned") {
+        document.getElementById("gateScreen").classList.remove("hidden");
+        document.getElementById("gateBadge").innerHTML = '<span class="badge badge-banned">تم إيقاف الحساب</span>';
+        document.getElementById("gateTitle").textContent = "تم تجميد / إيقاف هذا الحساب";
+        document.getElementById("gateDesc").textContent =
+          "تم إيقاف صلاحية الوصول لهذا الحساب من قِبل الإدارة. تواصل مع الإدارة في حال وجود مراجعة.";
+        return;
+      }
+      document.getElementById("gateScreen").classList.add("hidden");
+      enterApp();
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById("appScreen").classList.add("hidden");
+      document.getElementById("gateScreen").classList.add("hidden");
+      document.getElementById("authScreen").classList.remove("hidden");
+    }
+
+    function canAssignOrders() {
+      return currentUser.role === "owner" || (currentUser.role === "mod" && currentUser.perms && currentUser.perms.assignOrders);
+    }
+
+    function canApproveUsers() {
+      return currentUser.role === "owner" || (currentUser.role === "mod" && currentUser.perms && currentUser.perms.approveUsers);
+    }
+
+    function canBanUsers() {
+      return currentUser.role === "owner" || (currentUser.role === "mod" && currentUser.perms && currentUser.perms.banUsers);
+    }
+
+    function canViewAudit() {
+      return currentUser.role === "owner" || (currentUser.role === "mod" && currentUser.perms && currentUser.perms.viewAudit);
+    }
+
+    function roleLabel(role) {
+      if (role === "owner") return '<span class="badge badge-owner">المالك الوحيد</span>';
+      if (role === "mod") return '<span class="badge badge-mod">مشرف</span>';
+      return '<span class="badge badge-tech">فني</span>';
+    }
+
+    function enterApp() {
+      document.getElementById("appScreen").classList.remove("hidden");
+      document.getElementById("currentUserBadge").innerHTML =
+        "<strong>" + escapeHtml(currentUser.name) + "</strong> " + roleLabel(currentUser.role);
+      document.getElementById("currentUserSub").textContent =
+        currentUser.role === "owner"
+          ? "البريد المالك: " + maskEmail(currentUser.email)
+          : "الحساب: " + maskEmail(currentUser.email);
+
+      document.getElementById("dbConfigBtn").classList.toggle("hidden", currentUser.role !== "owner");
+      document.getElementById("createOrderCard").classList.toggle("hidden", !canAssignOrders());
+      document.getElementById("teamTabBtn").classList.toggle("hidden", !(canApproveUsers() || canBanUsers() || currentUser.role === "owner"));
+      document.getElementById("auditTabBtn").classList.toggle("hidden", !canViewAudit());
+
+      populateAssignees();
+      populateDmPeers();
+      renderOrders();
+      renderGroupChat();
+      renderPrivateChat();
+      renderNotes();
+      renderTeam();
+      renderAudit();
+    }
+
+    function switchTab(tab) {
+      var btns = document.querySelectorAll(".tab-btn");
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.toggle("active", btns[i].getAttribute("data-tab") === tab);
+      }
+      var tabs = ["orders", "chat", "notes", "team", "audit"];
+      for (var j = 0; j < tabs.length; j++) {
+        document.getElementById("tab-" + tabs[j]).classList.toggle("hidden", tabs[j] !== tab);
+      }
+    }
+
+    function populateAssignees() {
+      var sel = document.getElementById("orderAssignee");
+      var activeStaff = state.users.filter(function(u) { return u.status === "active" && u.role !== "owner"; });
+      sel.innerHTML = '<option value="">غير معيّن بعد</option>' + activeStaff.map(function(u) {
+        return '<option value="' + u.id + '">' + escapeHtml(u.name) + ' (' + (u.role === "mod" ? "مشرف" : "فني") + ')</option>';
+      }).join("");
+    }
+
+    function createOrder() {
+      if (!canAssignOrders()) {
+        alert("ليس لديك صلاحية توجيه الطلبات.");
+        return;
+      }
+      var title = (document.getElementById("orderTitle").value || "").trim();
+      var location = (document.getElementById("orderLocation").value || "").trim();
+      var assigneeId = document.getElementById("orderAssignee").value;
+      var notes = (document.getElementById("orderNotes").value || "").trim();
+
+      if (!title) {
+        alert("يرجى كتابة عنوان الطلب.");
+        return;
+      }
+
+      var assignee = null;
+      for (var i = 0; i < state.users.length; i++) {
+        if (state.users[i].id === assigneeId) {
+          assignee = state.users[i];
+          break;
+        }
+      }
+
+      var order = {
+        id: "ord-" + Date.now(),
+        title: title,
+        location: location || "غير محدد",
+        assigneeId: assignee ? assignee.id : null,
+        assigneeName: assignee ? assignee.name : "غير معيّن بعد",
+        notes: notes,
+        status: "قيد التنفيذ",
+        createdAt: new Date().toLocaleString("ar-IQ")
+      };
+
+      state.orders.unshift(order);
+      addAudit(currentUser, 'أنشأ ووجّه الطلب "' + title + '" إلى (' + order.assigneeName + ')');
+      saveState();
+
+      document.getElementById("orderTitle").value = "";
+      document.getElementById("orderLocation").value = "";
+      document.getElementById("orderNotes").value = "";
+      renderOrders();
+      renderAudit();
+    }
+
+    function updateOrderStatus(orderId, status) {
+      for (var i = 0; i < state.orders.length; i++) {
+        if (state.orders[i].id === orderId) {
+          state.orders[i].status = status;
+          addAudit(currentUser, 'حدّث حالة الطلب "' + state.orders[i].title + '" إلى (' + status + ')');
+          saveState();
+          renderOrders();
+          renderAudit();
+          break;
+        }
+      }
+    }
+
+    function renderOrders() {
+      var list = document.getElementById("ordersList");
+      var visible = currentUser.role === "tech"
+        ? state.orders.filter(function(o) { return o.assigneeId === currentUser.id || !o.assigneeId; })
+        : state.orders;
+
+      document.getElementById("ordersCount").textContent = visible.length;
+
+      if (!visible.length) {
+        list.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">لا توجد طلبات حالياً.</p>';
+        return;
+      }
+
+      list.innerHTML = visible.map(function(o) {
+        return (
+          '<div class="item-row">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">' +
+              '<strong>' + escapeHtml(o.title) + '</strong>' +
+              '<span class="badge badge-mod">' + escapeHtml(o.status) + '</span>' +
+            '</div>' +
+            '<div style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">' +
+              'الموقع: ' + escapeHtml(o.location) + ' • الفني: ' + escapeHtml(o.assigneeName) +
+            '</div>' +
+            (o.notes ? '<p style="font-size:13px; margin-top:6px;">' + escapeHtml(o.notes) + '</p>' : '') +
+            '<div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">' +
+              '<button type="button" class="btn btn-ghost" style="padding:5px 10px; font-size:12px;" onclick="updateOrderStatus(\'' + o.id + '\', \'جاري العمل\')">جاري العمل</button>' +
+              '<button type="button" class="btn btn-lime" style="padding:5px 10px; font-size:12px;" onclick="updateOrderStatus(\'' + o.id + '\', \'مكتمل\')">مكتمل</button>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join("");
+    }
+
+    function sendGroupMsg() {
+      var inp = document.getElementById("groupChatInput");
+      var text = (inp.value || "").trim();
+      if (!text) return;
+
+      state.groupMessages.push({
+        id: "gm-" + Date.now(),
+        senderId: currentUser.id,
+        senderName: currentUser.name,
+        text: text,
+        time: new Date().toLocaleTimeString("ar-IQ", { hour: "2-digit", minute: "2-digit" })
+      });
+      inp.value = "";
+      saveState();
+      renderGroupChat();
+    }
+
+    function renderGroupChat() {
+      var box = document.getElementById("groupChatBox");
+      box.innerHTML = state.groupMessages.map(function(m) {
+        var mine = m.senderId === currentUser.id;
+        return (
+          '<div class="msg-bubble ' + (mine ? "mine" : "") + '">' +
+            '<div class="msg-meta">' + escapeHtml(m.senderName) + ' • ' + escapeHtml(m.time) + '</div>' +
+            '<div>' + escapeHtml(m.text) + '</div>' +
+          '</div>'
+        );
+      }).join("");
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function populateDmPeers() {
+      var sel = document.getElementById("dmPeerSelect");
+      var peers = state.users.filter(function(u) { return u.status === "active" && u.id !== currentUser.id; });
+      if (!peers.length) {
+        sel.innerHTML = '<option value="">لا يوجد أعضاء نشطون آخرون بعد</option>';
+        return;
+      }
+      sel.innerHTML = peers.map(function(u) {
+        return '<option value="' + u.id + '">' + escapeHtml(u.name) + ' (' + (u.role === "owner" ? "المالك" : u.role === "mod" ? "مشرف" : "فني") + ')</option>';
+      }).join("");
+    }
+
+    function sendPrivateMsg() {
+      var peerId = document.getElementById("dmPeerSelect").value;
+      var inp = document.getElementById("privateChatInput");
+      var text = (inp.value || "").trim();
+      if (!peerId || !text) return;
+
+      state.privateMessages.push({
+        id: "pm-" + Date.now(),
+        fromId: currentUser.id,
+        fromName: currentUser.name,
+        toId: peerId,
+        text: text,
+        time: new Date().toLocaleTimeString("ar-IQ", { hour: "2-digit", minute: "2-digit" })
+      });
+      inp.value = "";
+      saveState();
+      renderPrivateChat();
+    }
+
+    function renderPrivateChat() {
+      var peerId = document.getElementById("dmPeerSelect").value;
+      var box = document.getElementById("privateChatBox");
+      if (!peerId) {
+        box.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">اختر عضواً لبدء محادثة خاصة.</p>';
+        return;
+      }
+      var msgs = state.privateMessages.filter(function(m) {
+        return (m.fromId === currentUser.id && m.toId === peerId) || (m.fromId === peerId && m.toId === currentUser.id);
+      });
+      if (!msgs.length) {
+        box.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">لا توجد رسائل خاصة بعد.</p>';
+        return;
+      }
+      box.innerHTML = msgs.map(function(m) {
+        var mine = m.fromId === currentUser.id;
+        return (
+          '<div class="msg-bubble ' + (mine ? "mine" : "") + '">' +
+            '<div class="msg-meta">' + escapeHtml(m.fromName) + ' • ' + escapeHtml(m.time) + '</div>' +
+            '<div>' + escapeHtml(m.text) + '</div>' +
+          '</div>'
+        );
+      }).join("");
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function addNote() {
+      var title = (document.getElementById("noteTitle").value || "").trim();
+      var scope = document.getElementById("noteScope").value;
+      var body = (document.getElementById("noteBody").value || "").trim();
+      if (!title && !body) {
+        alert("اكتب عنواناً أو نصاً للمذكرة.");
+        return;
+      }
+
+      state.notes.unshift({
+        id: "n-" + Date.now(),
+        ownerId: currentUser.id,
+        ownerName: currentUser.name,
+        scope: scope,
+        title: title || "مذكرة بدون عنوان",
+        body: body,
+        createdAt: new Date().toLocaleDateString("ar-IQ")
+      });
+
+      document.getElementById("noteTitle").value = "";
+      document.getElementById("noteBody").value = "";
+      saveState();
+      renderNotes();
+    }
+
+    function renderNotes() {
+      var list = document.getElementById("notesList");
+      var visible = state.notes.filter(function(n) { return n.scope === "shared" || n.ownerId === currentUser.id; });
+      if (!visible.length) {
+        list.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">لا توجد مذكرات محفوظة.</p>';
+        return;
+      }
+      list.innerHTML = visible.map(function(n) {
+        return (
+          '<div class="item-row">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">' +
+              '<strong>' + escapeHtml(n.title) + '</strong>' +
+              '<span class="badge ' + (n.scope === "private" ? "badge-owner" : "badge-mod") + '">' +
+                (n.scope === "private" ? "خاصة بي" : "مشتركة") +
+              '</span>' +
+            '</div>' +
+            '<p style="font-size:13.5px; margin-top:6px;">' + escapeHtml(n.body) + '</p>' +
+            '<div style="font-size:11.5px; color:var(--text-muted); margin-top:6px;">' + escapeHtml(n.createdAt) + '</div>' +
+          '</div>'
+        );
+      }).join("");
+    }
+
+    function approveUser(userId, role) {
+      if (!canApproveUsers()) {
+        alert("ليس لديك صلاحية الموافقة على الأعضاء.");
+        return;
+      }
+      for (var i = 0; i < state.users.length; i++) {
+        if (state.users[i].id === userId) {
+          var u = state.users[i];
+          u.status = "active";
+          u.role = role;
+          if (role === "mod" && !u.perms) {
+            u.perms = { assignOrders: true, approveUsers: false, banUsers: false, viewAudit: false };
+          }
+          addAudit(currentUser, "وافق على انضمام (" + u.name + ") بصفة (" + (role === "mod" ? "مشرف" : "فني") + ")");
+          saveState();
+          populateAssignees();
+          populateDmPeers();
+          renderTeam();
+          renderAudit();
+          break;
+        }
+      }
+    }
+
+    function toggleUserBan(userId) {
+      if (!canBanUsers()) {
+        alert("ليس لديك صلاحية إيقاف/طرد الأعضاء.");
+        return;
+      }
+      for (var i = 0; i < state.users.length; i++) {
+        var u = state.users[i];
+        if (u.id === userId && u.role !== "owner") {
+          u.status = u.status === "banned" ? "active" : "banned";
+          addAudit(currentUser, (u.status === "banned" ? "أوقف وطرد" : "أعاد تفعيل") + " حساب (" + u.name + ")");
+          saveState();
+          populateAssignees();
+          populateDmPeers();
+          renderTeam();
+          renderAudit();
+          break;
+        }
+      }
+    }
+
+    function changeUserRole(userId, newRole) {
+      if (currentUser.role !== "owner") {
+        alert("فقط المالك الوحيد يمكنه تغيير رتبة المشرف.");
+        return;
+      }
+      for (var i = 0; i < state.users.length; i++) {
+        var u = state.users[i];
+        if (u.id === userId && u.role !== "owner") {
+          u.role = newRole;
+          if (!u.perms) u.perms = { assignOrders: true, approveUsers: false, banUsers: false, viewAudit: false };
+          addAudit(currentUser, "عدّل رتبة (" + u.name + ") إلى (" + (newRole === "mod" ? "مشرف" : "فني") + ")");
+          saveState();
+          populateAssignees();
+          populateDmPeers();
+          renderTeam();
+          renderAudit();
+          break;
+        }
+      }
+    }
+
+    function togglePerm(userId, permKey) {
+      if (currentUser.role !== "owner") {
+        alert("فقط المالك الوحيد يتحكم بصلاحيات المشرفين.");
+        return;
+      }
+      for (var i = 0; i < state.users.length; i++) {
+        var u = state.users[i];
+        if (u.id === userId && u.role !== "owner") {
+          u.perms = u.perms || {};
+          u.perms[permKey] = !u.perms[permKey];
+          addAudit(currentUser, "عدّل صلاحية (" + permKey + ") للمشرف (" + u.name + ") إلى (" + (u.perms[permKey] ? "مفعّلة" : "معطّلة") + ")");
+          saveState();
+          renderAudit();
+          break;
+        }
+      }
+    }
+
+    function renderTeam() {
+      var pendingBox = document.getElementById("pendingUsersList");
+      var activeBox = document.getElementById("activeUsersList");
+
+      var pending = state.users.filter(function(u) { return u.status === "pending"; });
+      pendingBox.innerHTML = pending.length
+        ? pending.map(function(u) {
+            return (
+              '<div class="item-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">' +
+                '<div>' +
+                  '<strong>' + escapeHtml(u.name) + '</strong>' +
+                  '<div style="font-size:12px; color:var(--text-muted);">' + maskEmail(u.email) + '</div>' +
+                '</div>' +
+                '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
+                  '<button type="button" class="btn btn-lime" style="padding:6px 12px; font-size:12px;" onclick="approveUser(\'' + u.id + '\', \'tech\')">قبول كفني</button>' +
+                  '<button type="button" class="btn btn-primary" style="padding:6px 12px; font-size:12px;" onclick="approveUser(\'' + u.id + '\', \'mod\')">قبول كمشرف</button>' +
+                  '<button type="button" class="btn btn-danger" style="padding:6px 12px; font-size:12px;" onclick="toggleUserBan(\'' + u.id + '\')">رفض / حظر</button>' +
+                '</div>' +
+              '</div>'
+            );
+          }).join("")
+        : '<p style="color:var(--text-muted); font-size:13px;">لا توجد طلبات بانتظار الموافقة حالياً.</p>';
+
+      var others = state.users.filter(function(u) { return u.status !== "pending"; });
+      activeBox.innerHTML = others.map(function(u) {
+        var isOwner = u.role === "owner";
+        var p = u.perms || {};
+        return (
+          '<div class="item-row">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
+              '<div>' +
+                '<strong>' + escapeHtml(u.name) + '</strong> ' + roleLabel(u.role) +
+                (u.status === "banned" ? ' <span class="badge badge-banned">موقوف</span>' : '') +
+                '<div style="font-size:12px; color:var(--text-muted);">' + maskEmail(u.email) + '</div>' +
+              '</div>' +
+              (!isOwner ? (
+                '<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">' +
+                  (currentUser.role === "owner" ? (
+                    '<select style="width:auto; padding:5px 10px; font-size:12px;" onchange="changeUserRole(\'' + u.id + '\', this.value)">' +
+                      '<option value="tech"' + (u.role === "tech" ? " selected" : "") + '>فني</option>' +
+                      '<option value="mod"' + (u.role === "mod" ? " selected" : "") + '>مشرف</option>' +
+                    '</select>'
+                  ) : '') +
+                  (canBanUsers() ? (
+                    '<button type="button" class="btn btn-danger" style="padding:6px 11px; font-size:12px;" onclick="toggleUserBan(\'' + u.id + '\')">' +
+                      (u.status === "banned" ? "إلغاء الإيقاف" : "طرد / إيقاف") +
+                    '</button>'
+                  ) : '') +
+                '</div>'
+              ) : '') +
+            '</div>' +
+            (!isOwner && u.role === "mod" && currentUser.role === "owner" ? (
+              '<div class="perm-grid">' +
+                '<label class="perm-check"><input type="checkbox" ' + (p.assignOrders ? "checked" : "") + ' onchange="togglePerm(\'' + u.id + '\', \'assignOrders\')" /> توزيع وتوجيه الطلبات</label>' +
+                '<label class="perm-check"><input type="checkbox" ' + (p.approveUsers ? "checked" : "") + ' onchange="togglePerm(\'' + u.id + '\', \'approveUsers\')" /> الموافقة على الأعضاء الجدد</label>' +
+                '<label class="perm-check"><input type="checkbox" ' + (p.banUsers ? "checked" : "") + ' onchange="togglePerm(\'' + u.id + '\', \'banUsers\')" /> طرد / إيقاف الفنيين</label>' +
+                '<label class="perm-check"><input type="checkbox" ' + (p.viewAudit ? "checked" : "") + ' onchange="togglePerm(\'' + u.id + '\', \'viewAudit\')" /> الاطلاع على سجل الرقابة</label>' +
+              '</div>'
+            ) : '') +
+          '</div>'
+        );
+      }).join("");
+    }
+
+    function renderAudit() {
+      var box = document.getElementById("auditList");
+      if (!state.auditLogs.length) {
+        box.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">لا توجد حركات مسجلة بعد.</p>';
+        return;
+      }
+      box.innerHTML = state.auditLogs.map(function(a) {
+        return (
+          '<div class="item-row">' +
+            '<div style="font-size:13.5px;">' + escapeHtml(a.action) + '</div>' +
+            '<div style="font-size:11.5px; color:var(--text-muted); margin-top:4px;">' + escapeHtml(a.actor) + ' • ' + escapeHtml(a.time) + '</div>' +
+          '</div>'
+        );
+      }).join("");
+    }
+
+    function openDbModal() {
+      try {
+        document.getElementById("dbConfigInput").value = localStorage.getItem(DB_CFG_KEY) || "";
+      } catch (e) {}
+      document.getElementById("dbModal").classList.remove("hidden");
+    }
+
+    function closeDbModal() {
+      document.getElementById("dbModal").classList.add("hidden");
+    }
+
+    function saveDbConfig() {
+      var raw = (document.getElementById("dbConfigInput").value || "").trim();
+      if (!raw) {
+        alert("يرجى لصق إعدادات Firebase أولاً.");
+        return;
+      }
+      try {
+        localStorage.setItem(DB_CFG_KEY, raw);
+      } catch (e) {}
+      updateConnectionStatus(true, "تم حفظ إعدادات Firebase");
+      closeDbModal();
+      alert("تم حفظ إعدادات قاعدة البيانات بنجاح.");
+    }
+
+    function clearDbConfig() {
+      try {
+        localStorage.removeItem(DB_CFG_KEY);
+      } catch (e) {}
+      updateConnectionStatus(false, "وضع التخزين المحلي");
+      closeDbModal();
+    }
+
+    function updateConnectionStatus(hasCfg, label) {
+      var dots = ["connDot", "appConnDot"];
+      for (var i = 0; i < dots.length; i++) {
+        var el = document.getElementById(dots[i]);
+        if (el) el.className = "status-dot " + (hasCfg ? "dot-cloud" : "dot-local");
+      }
+      var cText = document.getElementById("connText");
+      if (cText) cText.textContent = label;
+      var aLabel = document.getElementById("appConnLabel");
+      if (aLabel) aLabel.textContent = hasCfg ? "Firebase مُعد" : "محلي";
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    var savedCfg = false;
+    try {
+      savedCfg = !!localStorage.getItem(DB_CFG_KEY);
+    } catch (e) {}
+    updateConnectionStatus(savedCfg, savedCfg ? "إعدادات Firebase محفوظة" : "وضع التخزين المحلي");
+  </script>
+</body>
+</html>
